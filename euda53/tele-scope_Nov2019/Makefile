@@ -40,11 +40,11 @@ scope53m_50x50: scope53m_50x50.cc
 	@install_name_tool -add_rpath @executable_path ./scope53m_50x50
 	@echo 'done: scope53m_50x50'
 
-scope53m_Rudy: scope53m_Rudy.cc
-	g++ $(CXXFLAGS) scope53m_50x50.cc -o scope53m_Rudy \
+scope53m: scope53m.cc
+	g++ $(CXXFLAGS) scope53m.cc -o scope53m \
 	$(ROOTLIBS) -L../lib -lEUDAQ
-	@install_name_tool -add_rpath @executable_path ./scope53m_Rudy
-	@echo 'done: scope53m_Rudy'
+	@install_name_tool -add_rpath @executable_path ./scope53m
+	@echo 'done: scope53m'
 
 ed53: ed53.cc
 	g++ $(CXXFLAGS) ed53.cc -o ed53 \
