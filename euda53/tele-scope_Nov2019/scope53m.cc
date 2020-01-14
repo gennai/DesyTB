@@ -5960,7 +5960,7 @@ TProfile2D * effvsxmymHighStat = new
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // done
   cout <<"Fitting the sigma of the TOT"<<endl;
-  linpxqHisto.Fit("landau","landau0");
+  linqHisto.Fit("landau","landau0","",0,16);
   
 
   cout << endl << histoFile.GetName() << endl;
