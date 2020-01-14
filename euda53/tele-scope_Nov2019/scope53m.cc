@@ -1,4 +1,3 @@
-
 // Daniel Pitzl, DESY, Jun 2018, Mar 2019
 // telescope analysis with RD53A
 // module in front
@@ -338,6 +337,7 @@ int main( int argc, char* argv[] )
   int fifty = 0; // default is 100x25
   int rot90 = 0; // default is straight
   int modrun = 0;
+  double qsigma = 1.5;
 
   ifstream runsFile( "runs.dat" );
 
@@ -361,6 +361,7 @@ int main( int argc, char* argv[] )
     string TILT( "tilt" );
     string FIFTY( "fifty" );
     string ROT90( "rot90" );
+	string QSIGMA("qsigma");
     bool found = 0;
 
     while( ! runsFile.eof() ) {
@@ -397,6 +398,10 @@ int main( int argc, char* argv[] )
 
       if( tag == TILT ) {
 	tokenizer >> DUTtilt;
+	continue;
+      }
+	  if( tag == QSIGMA) {
+	tokenizer >> qsigma;
 	continue;
       }
 
@@ -439,6 +444,7 @@ int main( int argc, char* argv[] )
 	<< "  fifty " << fifty << endl
 	<< "  rot90 " << rot90 << endl
 	<< "  modrun " << modrun << endl
+	<< "  qsigma " << qsigma <<endl
 	;
     else {
       cout << "run " << run << " not found in runs.dat" << endl;
@@ -452,10 +458,6 @@ int main( int argc, char* argv[] )
   double upsignx = 1; // w.r.t. telescope
   double upsigny = 1;
   if( chip0 == -182 && run >= 35689 ) upsigny = -1; // Mar 2019 HLL
-  //if (rot90){
-        //upsignx = -1
-        //upsigny = -1;
-  //}
 
   const double fTLU = 384E6; // 384 MHz TLU clock
   /*
@@ -790,9 +792,11 @@ int main( int argc, char* argv[] )
 
   const double wt = atan(1.0) / 45.0; // pi/180 deg
 
-  double qwid = 1.5; // [ToT] for Moyal in 150 um from x fitmoyal5.C+("linq0")
+  double qwid = qsigma; // [ToT] for Moyal in 150 um from x fitmoyal5.C+("linq0")
+  double qxmax = 20.; // = exp(-qmin/qwid) for qmin = 4.8 ToT lower cutoff
+
   //double qxmax = 0.04; // = exp(-qmin/qwid) for qmin = 4.8 ToT lower cutoff
-  double qxmax = 20.;
+
   int iDUT = 0; // eudaq
 
   int DUTaligniteration = 0;
@@ -920,9 +924,6 @@ int main( int argc, char* argv[] )
     qR = 20;
   }
 
-
-//RUDY: QUA PUOI AGGIUNGERE TAGLI ALLA CARICA PER PRENDERE I VALORI CENTRALI DELLA LANDAU E MIGLIORARE LA RISOLUZIONE
-
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // DUT dead pixels:
 
@@ -962,8 +963,8 @@ int main( int argc, char* argv[] )
       tokenizer >> tag; // leading white space is suppressed
 
       if( tag.substr(0,1) == hash ) { // comments start with #
-	cout << line << endl;
-	continue;
+		cout << line << endl;
+		continue;
       }
 
       if( tag == COL ) {
@@ -988,7 +989,8 @@ int main( int argc, char* argv[] )
 	      iy = 2*row + 0; // sensor 25
 	    else
 	      iy = 2*row + 1;
-	  if(chip0 == 792125) //FBK
+	
+ 		if(chip0 == 792125) //FBK
               ix = col/2; // sensor 100
             if( col%2 )
               iy = 2*row + 1; // sensor 25
@@ -996,6 +998,7 @@ int main( int argc, char* argv[] )
               iy = 2*row + 0;
 
           }
+
 
 	  int ipx = ix * 384 + iy;
 	  deadset.insert(ipx);
@@ -1067,7 +1070,7 @@ int main( int argc, char* argv[] )
 	    row = 2*iy + 0; // sensor 25
 	  else
 	    row = 2*iy + 1;
-          if(chip0 == 792125) //FBK
+	if(chip0 == 792125) //FBK
             if( ix%2 )
             row = 2*iy + 1; // sensor 25
             else
@@ -1473,7 +1476,7 @@ int main( int argc, char* argv[] )
     TProfile2D( "dutpxqvsxy",
 		"DUT pixel signal map;column;row;<pixel signal> [ToT]",
 		400, 0, 400, 192, 0, 192, 0, 16 );
-
+    
   TH1I dutpxbcHisto( "dutpxbc",
 		     "DUT pixel BC;DUT pixel BC;DUT pixels without masking",
 		     32, -0.5, 31.5 );
@@ -1920,7 +1923,9 @@ int main( int argc, char* argv[] )
   TH1I dutdyHisto( "dutdy",
 		   "DUT - track dy;DUT cluster - track #Deltay [mm];DUT clusters",
 		   500, -0.5, 0.5 );
-
+ TH2I dutdxdyHisto( "dutdxdy",
+		   "DUT cluster - track;DUT - track #Deltax [mm];DUT - track #Deltay [mm];Events",
+		   300, -0.1, 0.1, 300, -0.1, 0.1 );
   TH2I * dutxxHisto = new
     TH2I( "dutxx", "tracks vs DUT in x;track x [mm];DUT cluster x [mm];track-cluster pairs",
 	  500, -5, 5, 500, -5, 5 );
@@ -1996,6 +2001,9 @@ int main( int argc, char* argv[] )
   TH1I dutdycHisto( "dutdyc",
 		    "DUT - track dy;DUT cluster - track #Deltay [mm];DUT clusters",
 		    500, -0.5, 0.5 );
+	TH1I dutdyc2Histo( "dutdyc2",
+		     "DUT - track dy;DUT cluster - track #Deltay [mm];DUT 2-px clusters",
+		     500, -0.5, 0.5 );
   TProfile dutmadyvsq( "dutmadyvsq",
 		       "DUT MAD(#Deltay) vs Q;cluster signal [ToT];MAD(#Deltay) [mm]",
 		       80, 0, 80, 0, 0.1 );
@@ -2237,9 +2245,21 @@ int main( int argc, char* argv[] )
     TProfile2D( "linnpxvsxmym",
 		"LIN cluster size vs xmod ymod;x track mod 100 [#mum];y track mod 100 [#mum];LIN <cluster size> [pixels]",
 		50, 0, 100, 50, 0, 100, 0, 20 );
+  TProfile2D * linnpxvsxmymHighStat = new
+    TProfile2D( "linnpxvsxmymhighstat",
+		"LIN cluster size vs xmod ymod;x track mod 100 [#mum];y track mod 100 [#mum];LIN <cluster size> [pixels]",
+		100, 0, 100, 100, 0, 100, 0, 20 );
   TProfile linncolvsxm( "linncolvsxm",
 			"LIN cluster size vs xmod;x track mod 100 [#mum];LIN <cluster size> [columns]",
 			50, 0, 100, 0, 20 );
+	TProfile2D * linnpxvsxmymHighStatLargeCell = new
+    TProfile2D( "linnpxvsxmymhighstatlargecell",
+		"LIN cluster size vs xmod ymod;x track mod 100 [#mum];y track mod 200 [#mum];LIN <cluster size> [pixels]",
+		100, 0, 100, 200, 0, 200, 0, 20 );
+	TH2I* linnpxvsxmymHighStatClusterSize2 = new
+    TH2I( "linnpxvsxmymhighstatclustersize2",
+		"LIN cluster size vs xmod ymod;x track mod 100 [#mum];y track mod 200 [#mum]; Entries",
+		100, 0, 100, 100, 0, 100 );
   TProfile linncolvsym( "linncolvsym",
 			"LIN cluster size vs ymod;y track mod 100 [#mum];LIN <cluster size> [columns]",
 			50, 0, 100, 0, 20 );
@@ -2258,10 +2278,23 @@ int main( int argc, char* argv[] )
 			"Lin cluster size vs ymod;y track mod 100 [#mum];Lin <cluster size> [rows]",
 			50, 0, 100, 0, 20 );
 
-  TProfile2D * linqxvsxmym = new
-    TProfile2D( "linqxvsxmym",
+  TH2F * linqxvsxmym = new
+    TH2F( "linqxvsxmym",
 		"LIN cluster signal vs xmod ymod;x track mod 100 [#mum];y track mod 100 [#mum];LIN <cluster signal> [ToT]",
+		50, 0, 100, 50, 0, 100);
+  TProfile2D * linmoyalqxvsxmym = new
+    TProfile2D( "linmoyalqxvsxmym",
+		"LIN cluster moyal signal vs xmod ymod;x track mod 100 [#mum];y track mod 100 [#mum];LIN <cluster signal> [ToT]",
 		50, 0, 100, 50, 0, 100, 0, qxmax );
+	TProfile2D * linqxvsxmymHighStat = new
+    TProfile2D( "linqxvsxmymhighstat",
+		"LIN cluster signal vs xmod ymod;x track mod 100 [#mum];y track mod 100 [#mum];LIN <cluster signal> [ToT]",
+		100, 0, 100, 100, 0, 100, 0, qxmax );
+		TProfile2D * linqxvsxmymaverage = new
+    TProfile2D( "linqxvsxmymaverage",
+		"LIN cluster signal vs xmod ymod;x track mod 100 [#mum];y track mod 100 [#mum];LIN <cluster signal> [ToT]",		
+		50, 0, 100, 50, 0, 100, 0, qxmax );
+
   TProfile linqxvsxm( "linqxvsxm",
 		     "LIN cluster signal vs xmod;x track mod 100 [#mum];LIN <cluster signal> [ToT]",
 		     50, 0, 100, 0, qxmax );
@@ -2799,6 +2832,10 @@ int main( int argc, char* argv[] )
     TProfile2D( "effvsxmym",
 		"DUT efficiency vs xmod ymod;x track mod 100 [#mum];y track mod 100 [#mum];efficiency",
 		50, 0, 100, 50, 0, 100, -1, 2 );
+TProfile2D * effvsxmymHighStat = new
+    TProfile2D( "effvsxmymhighstat",
+		"DUT efficiency vs xmod ymod;x track mod 100 [#mum];y track mod 100 [#mum];efficiency",
+		100, 0, 100, 100, 0, 100, -1, 2 );
   TProfile2D * effvsxmymdead = new
     TProfile2D( "effvsxmymdead",
 		"DUT dead efficiency vs xmod ymod;x track mod 100 [#mum];y track mod 100 [#mum];dead efficiency",
@@ -2811,6 +2848,10 @@ int main( int argc, char* argv[] )
     TProfile2D( "effvsxmym2live",
 		"DUT alive efficiency vs xmod ymod;x track mod 200 [#mum];y track mod 200 [#mum];alive efficiency",
 		100, 0, 200, 100, 0, 200, -1, 2 );
+		TProfile2D * effvsxmym4live = new
+    TProfile2D( "effvsxmym4live",
+		"DUT alive efficiency vs xmod ymod;x track mod 400 [#mum];y track mod 400 [#mum];alive efficiency",
+		200, 0, 400, 400, 0, 200, -1, 2 );
   TProfile effvsxm( "effvsxm",
 		    "DUT efficiency vs xmod;x track mod 100 [#mum];efficiency",
 		    50, 0, 100, -1, 2 );
@@ -3023,6 +3064,7 @@ int main( int argc, char* argv[] )
 
 	    dutpxqvsx.Fill( ix, px.tot + 0.5 );
 	    dutpxqvsxy->Fill( ix, iy, px.tot + 0.5 );
+		
 
 	    if( ix < 128 )
 	      synpxbcHisto.Fill( frm );
@@ -3072,7 +3114,7 @@ int main( int argc, char* argv[] )
 	      }
 	    }
 
-	  } // DUT
+	  }// DUT
 
 	  pb.push_back(px);
 
@@ -4072,9 +4114,11 @@ int main( int argc, char* argv[] )
       double ymod = fmod( 9.000 + y4, 0.100 ); // [0,0.100] mm
       double xmod2 = fmod( 9.000 + x4, 0.200 ); // [0,0.200] mm
       double ymod2 = fmod( 9.000 + y4, 0.200 ); // [0,0.200] mm
+      double xmod4 = fmod( 9.000 + x4, 0.400 ); // [0,0.400] mm
+      double ymod4 = fmod( 9.000 + y4, 0.400 ); // [0,0.400] mm
+
       double xmod5 = fmod( 9.000 + x4, 0.050 ); // [0,0.050] mm
       double ymod5 = fmod( 9.000 + y4, 0.050 ); // [0,0.050] mm
-      double xmod4 = fmod( 9.000 + x4, 0.400 ); // [0,0.400] mm RD53 8x8 core
 
       double dxbeam = x4 - xbeam;
       double dybeam = y4 - ybeam;
@@ -4230,7 +4274,9 @@ int main( int argc, char* argv[] )
 
 	  if( chip0 == 182 || chip0 == 211 || // fresh: no box
 	      chip0 == 501 || chip0 == 504 ||
-	      chip0 == 520 || chip0 == 524 || chip0 == 531 || chip0 == 543 || chip0 == 550 || chip0 == 793350 || chip0 == 792125 ) {
+	      chip0 == 520 || chip0 == 524 ||
+	      chip0 == 531 || chip0 == 543 || chip0 == 550 || run > 37620) {
+	      //chip0 == 531 || chip0 == 543 || chip0 == 550 ) {
 
 	    x4 = x8;
 	    y4 = y8;
@@ -4241,12 +4287,13 @@ int main( int argc, char* argv[] )
 	    xmod2 = fmod( 9.000 + x4, 0.200 ); // [0,0.200] mm
 	    ymod2 = fmod( 9.000 + y4, 0.200 ); // [0,0.200] mm
 
+		xmod4 = fmod( 9.000 + x4, 0.400 ); // [0,0.400] mm
+	    ymod4 = fmod( 9.000 + y4, 0.400 ); // [0,0.400] mm
+
 	    xmod5 = fmod( 9.000 + x4, 0.050 ); // [0,0.050] mm
 	    ymod5 = fmod( 9.000 + y4, 0.050 ); // [0,0.050] mm
 
-	    xmod4 = fmod( 9.000 + x4, 0.400 ); // [0,0.400] mm RD53 8x8 core
-
-	    dxbeam = x4 - xbeam;
+		dxbeam = x4 - xbeam;
 	    dybeam = y4 - ybeam;
 	    drbeam = sqrt( dxbeam*dxbeam + dybeam*dybeam );
 
@@ -4322,7 +4369,8 @@ int main( int argc, char* argv[] )
 	double Q = c->signal + 0.5; // bin center correction
 	double Q0 = Q*norm;
 	//double Qx = exp( -Q0 / qwid ); // Moyal weighting
-        double Qx = Q0; //RUDY
+	double Qx = Q0; // Moyal weighting
+
 	int npx = c->size;
 
 	// residuals for pre-alignment:
@@ -4334,12 +4382,14 @@ int main( int argc, char* argv[] )
 
 	double dutdx = dutx - x4;
 	double dutdy = duty - y4;
-	//if( rot90 ) dutdy = -duty - y4;
-	if( rot90 ) dutdx = -dutx - x4;
+	//here below we need to fix for 25x100 in the runs where they were rotated
+	if( rot90 && chip0 != 792125 ) dutdy = -duty - y4;
+	if (rot90 && chip0 == 792125 ) dutdx = -dutx - x4;
 
 	dutdxHisto.Fill( dutdx );
 	dutdyHisto.Fill( dutdy );
-
+	dutdxdyHisto.Fill(dutdx, dutdy);
+	
 	if( fabs(dutdx) < fabs(dxmin) ) dxmin = dutdx;
 	if( fabs(dutdy) < fabs(dymin) ) dymin = dutdy;
 
@@ -4381,7 +4431,8 @@ int main( int argc, char* argv[] )
 
 	  dutdy0Histo.Fill( dutdy );
 	  dutdycHisto.Fill( dutdy );
-
+	  if( c->nrow == 2 )
+	    dutdyc2Histo.Fill( dutdy );
 	  dutmadyvsq.Fill( Q0, fabs(dutdy) );
 	  if( Q0 > qL && Q0 < qR )
 	    dutdycqHisto.Fill( dutdy );
@@ -4510,9 +4561,13 @@ int main( int argc, char* argv[] )
 	    }
 
 	    linnpxvsxmym->Fill( xmod*1E3, ymod*1E3, npx );
+	    linnpxvsxmymHighStat->Fill( xmod*1E3, ymod*1E3, npx );
 	    linncolvsxm.Fill( xmod*1E3, c->ncol );
 	    linncolvsym.Fill( ymod*1E3, c->ncol );
-
+		linnpxvsxmymHighStatLargeCell->Fill( xmod*1E3, ymod2*1E3, npx );
+		if (npx ==2)
+			linnpxvsxmymHighStatClusterSize2->Fill(xmod*1E3, ymod2*1E3);
+	   
 	    linnrowvsxmym->Fill( xmod*1E3, ymod*1E3, c->nrow );
 	    linnrowvsxm.Fill( xmod*1E3, c->nrow );
 	    linnrowvsxm5.Fill( xmod5*1E3, c->nrow );
@@ -4521,7 +4576,9 @@ int main( int argc, char* argv[] )
 	    if( fifty )
 	      linnrowvsym.Fill( ymod*1E3, c->nrow );
 
-	    linqxvsxmym->Fill( xmod*1E3, ymod*1E3, Qx );
+	    linqxvsxmymaverage->Fill( xmod*1E3, ymod*1E3, Qx );
+	    linmoyalqxvsxmym->Fill(xmod*1E3, ymod*1E3, exp(-Qx/qwid));
+	    linqxvsxmymHighStat->Fill( xmod*1E3, ymod*1E3, Qx );
 	    linqxvsxm.Fill( xmod*1E3, Qx );
 	    linqxvsxm5.Fill( xmod5*1E3, Qx );
 	    linqxvsym.Fill( ymod*1E3, Qx );
@@ -4902,14 +4959,13 @@ int main( int argc, char* argv[] )
 	    py =-( c->vpix[ipx].col + 0.5 - nx[iDUT]/2 ) * ptchx[iDUT]; // mm
 	  }
 	  dutpxxyHisto->Fill( px, py );
-	  
-          double pdx = px - x4; // triplet extrapol
-	  if(rot90)
-                pdx = -px - x4;
+	  double pdx = px - x4; // triplet extrapol
+	  double pdy = py - y4;
 
-          double pdy = py - y4;
-          if(rot90)
+	   if(rot90){
+                pdx = -px - x4;
                 pdy= -py - y4;
+	   }
 
 	  double pdxy = sqrt( pdx*pdx + pdy*pdy );
 	  if( pdxy < pdmin ) pdmin = pdxy;
@@ -4920,11 +4976,11 @@ int main( int argc, char* argv[] )
 
       int nm[99] = {0};
       for( int iw = 1; iw < 99; ++iw )
-	if( pdmin < iw*0.010 ) // 10 um bins
-	  nm[iw] = 1; // eff
+		if( pdmin < iw*0.010 ) // 10 um bins
+	  	nm[iw] = 1; // eff
 
       if( nm[49] )
-	dutxylkHisto->Fill( x4, y4 ); // tracks with cluster link
+		dutxylkHisto->Fill( x4, y4 ); // tracks with cluster link
 
       if( nm[20]
 	  && y4 < 4.7 && y4 > -4.7
@@ -5057,34 +5113,32 @@ int main( int argc, char* argv[] )
 	  if( x4 < -9.9 ) fidx = 0;
 	  if( x4 > -3.7 ) fidx = 0;
 	}
-	if( chip0 == 515 || chip0 == 516 || chip0 == 793350 && run<= 37635) { // straight Lin
-	  fidx = 1;
-          if( x4 >  3.2 ) fidx = 0;
-	  if( x4 < -3.2 ) fidx = 0;
+	if( (chip0 == 515 || chip0 == 516 || chip0 == 793350) && run <=  37635) { // straight Lin
+	  if( x4 >  3.2 ) fidx = 0;
+	  //if( x4 < -3.5 ) fidx = 0;
+		if( x4 < -3.2 ) fidx = 0;
+
 	}
-
-        if( chip0 == 793350 && run> 37635 || chip0 == 303150) { // straight Lin
+	if( (chip0 == 793350 && run> 37635) || chip0 == 303150) { // straight Lin
           fidx = 1;
           if( x4 >  3.2 ) fidx = 0;
           if( x4 < -3.5 ) fidx = 0;
-        }
-
-          /*if( chip0 == 792125 ) { // straight Lin
+		  fidy =1;
+		  if( y4 >  4.7 ) fidy = 0;
+          if( y4 < -4.0 ) fidy = 0;
+    }
+	if( (chip0 == 793350 && run> 37635) || run == 37631) { // straight Lin
           fidx = 1;
-          if( x4 >  3.2 ) fidx = 0;
-          if( x4 < -3.5 ) fidx = 0;
-        }*/
-
-          if( chip0 == 792125) { // straight Lin
+          if( x4 >  3.1 ) fidx = 0;
+          if( x4 < -3.1 ) fidx = 0;
+	}
+   if( chip0 == 792125) { // straight Lin
           if( x4 >  1. ) fidx = 0;
           if( x4 < -4.7 ) fidx = 0;
           fidy = 1;
-          if( y4 >  3.2 ) fidy = 0;
+          if( y4 >  3.1 ) fidy = 0;
           if( y4 < -3.5 ) fidy = 0;
         }
-
-       
-
 
 	// from track x, y (at DUT) to sensor col, row:
 
@@ -5136,6 +5190,7 @@ int main( int argc, char* argv[] )
 
 	    effvsr.Fill( drbeam, nm[49] );
 	    effvsxmym->Fill( xmod*1E3, ymod*1E3, nm[49] );
+	    effvsxmymHighStat->Fill( xmod*1E3, ymod*1E3, nm[49] );
 
 	    // efficiency around dead pixels:
 
@@ -5171,7 +5226,9 @@ int main( int argc, char* argv[] )
 	      effvsntri.Fill( triplets.size(), nm[49] ); // flat
 	      effvsxmymlive->Fill( xmod*1E3, ymod*1E3, nm[49] );
 	      effvsxmym2live->Fill( xmod2*1E3, ymod2*1E3, nm[49] );
-	      effvsxm.Fill( xmod*1E3, nm[49] ); // bias dot
+	      effvsxmym4live->Fill( xmod4*1E3, ymod4*1E3, nm[49] );
+	      
+		  effvsxm.Fill( xmod*1E3, nm[49] ); // bias dot
 	      effvsxm2.Fill( xmod2*1E3, nm[49] ); // bias dot
 	      effvsxm4.Fill( xmod4*1E3, nm[49] ); // bias dot
 	      effvsym.Fill( ymod*1E3, nm[49] ); // bias dot
@@ -5207,7 +5264,17 @@ int main( int argc, char* argv[] )
   } while( reader->NextEvent() && iev < lev );
 
   delete reader;
+  //computing the MPV from the moyal distribution 
+  int nxbins = linmoyalqxvsxmym->GetNbinsX();
+  int nybins = linmoyalqxvsxmym->GetNbinsY();
+  for (int i=1;i< nxbins+1;i++){
+	  for (int j=1;j< nybins+1;j++){
+		float qmpv = -qwid*log(linmoyalqxvsxmym->GetBinContent(i,j));
+		linqxvsxmym->SetBinContent(i,j,qmpv);	
 
+	  }
+
+  }
   cout << "done after " << iev << " events" << endl;
   histoFile.Write();
   //histoFile->Close();
@@ -5885,13 +5952,16 @@ int main( int argc, char* argv[] )
     DUTalignFile.close();
 
     cout << " to " << DUTalignFileName.str() << endl;
-
+	
   }
   else
     cout << "no" << endl;
-
+ 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // done
+  cout <<"Fitting the sigma of the TOT"<<endl;
+  linpxqHisto.Fit("landau","landau0");
+  
 
   cout << endl << histoFile.GetName() << endl;
 
