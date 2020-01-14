@@ -4383,7 +4383,8 @@ TProfile2D * effvsxmymHighStat = new
 	double dutdx = dutx - x4;
 	double dutdy = duty - y4;
 	//here below we need to fix for 25x100 in the runs where they were rotated
-	if( rot90 ) dutdy = -duty - y4;
+	if( rot90 && chip0 != 792125 ) dutdy = -duty - y4;
+	if (rot90 && chip0 == 792125 ) dutdx = -dutx - x4;
 
 	dutdxHisto.Fill( dutdx );
 	dutdyHisto.Fill( dutdy );
@@ -4960,10 +4961,12 @@ TProfile2D * effvsxmymHighStat = new
 	  dutpxxyHisto->Fill( px, py );
 	  double pdx = px - x4; // triplet extrapol
 	  double pdy = py - y4;
+
 	   if(rot90){
                 pdx = -px - x4;
                 pdy= -py - y4;
 	   }
+
 	  double pdxy = sqrt( pdx*pdx + pdy*pdy );
 	  if( pdxy < pdmin ) pdmin = pdxy;
 
