@@ -4369,7 +4369,7 @@ TProfile2D * effvsxmymHighStat = new
 	double Q = c->signal + 0.5; // bin center correction
 	double Q0 = Q*norm;
 	//double Qx = exp( -Q0 / qwid ); // Moyal weighting
-	double Qx = Q0; // Moyal weighting
+	double Qx = Q; 
 
 	int npx = c->size;
 
@@ -5960,7 +5960,7 @@ TProfile2D * effvsxmymHighStat = new
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // done
   cout <<"Fitting the sigma of the TOT"<<endl;
-  linqHisto.Fit("landau","landau0","",0,16);
+  linqHisto.Fit("landau","landau0","",4,10);
   
 
   cout << endl << histoFile.GetName() << endl;
