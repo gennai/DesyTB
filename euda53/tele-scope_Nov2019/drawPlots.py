@@ -64,10 +64,11 @@ def plotHisto(runNumber):
         myhisto = myfile.Get(histoname)
         try:
             if (histoname != "effvst3"):    
-                if ("linqxvsxmym" in histoname ):
-                    myhisto.SetMinimum(5.)
-                if ("linqxvsxmymaverage" in histoname):
-                    myhisto.SetMinimum(8.5)
+                #if ("linqxvsxmym" in histoname ):
+                #    myhisto.SetMinimum(4.5)
+                #    myhisto.SetMaximum(12.0)
+                #if ("linqxvsxmymaverage" in histoname):
+                #    myhisto.SetMinimum(8.5)
                 myhisto.Draw("colz")
                 myhisto.GetZaxis().SetTitleOffset(1.8)
                 if (histoname == "effvsxy"):                   

@@ -2286,10 +2286,14 @@ int main( int argc, char* argv[] )
     TProfile2D( "linmoyalqxvsxmym",
 		"LIN cluster moyal signal vs xmod ymod;x track mod 100 [#mum];y track mod 100 [#mum];LIN <cluster signal> [ToT]",
 		50, 0, 100, 50, 0, 100, 0, qxmax );
-	TProfile2D * linqxvsxmymHighStat = new
-    TProfile2D( "linqxvsxmymhighstat",
+	TProfile2D * linmoyalqxvsxmymHighStat = new
+    TProfile2D( "linmoyalqxvsxmymhighstat",
 		"LIN cluster signal vs xmod ymod;x track mod 100 [#mum];y track mod 100 [#mum];LIN <cluster signal> [ToT]",
 		100, 0, 100, 100, 0, 100, 0, qxmax );
+	TH2F * linqxvsxmymHighStat = new
+    TH2F( "linqxvsxmymhighstat",
+		"LIN cluster signal vs xmod ymod;x track mod 100 [#mum];y track mod 100 [#mum];LIN <cluster signal> [ToT]",
+		100, 0, 100, 100, 0, 100);
 		TProfile2D * linqxvsxmymaverage = new
     TProfile2D( "linqxvsxmymaverage",
 		"LIN cluster signal vs xmod ymod;x track mod 100 [#mum];y track mod 100 [#mum];LIN <cluster signal> [ToT]",		
@@ -4578,7 +4582,8 @@ TProfile2D * effvsxmymHighStat = new
 
 	    linqxvsxmymaverage->Fill( xmod*1E3, ymod*1E3, Qx );
 	    linmoyalqxvsxmym->Fill(xmod*1E3, ymod*1E3, exp(-Qx/qwid));
-	    linqxvsxmymHighStat->Fill( xmod*1E3, ymod*1E3, Qx );
+	    //linqxvsxmymHighStat->Fill( xmod*1E3, ymod*1E3, Qx );
+	    linmoyalqxvsxmymHighStat->Fill( xmod*1E3, ymod*1E3, exp(-Qx/qwid) );
 	    linqxvsxm.Fill( xmod*1E3, Qx );
 	    linqxvsxm5.Fill( xmod5*1E3, Qx );
 	    linqxvsym.Fill( ymod*1E3, Qx );
@@ -5275,6 +5280,19 @@ TProfile2D * effvsxmymHighStat = new
 	  }
 
   }
+  nxbins = linmoyalqxvsxmymHighStat->GetNbinsX();
+  nybins = linmoyalqxvsxmymHighStat->GetNbinsY();
+  for (int i=1;i< nxbins+1;i++){
+	  for (int j=1;j< nybins+1;j++){
+		float qmpv = -qwid*log(linmoyalqxvsxmymHighStat->GetBinContent(i,j));
+		linqxvsxmymHighStat->SetBinContent(i,j,qmpv);	
+
+	  }
+
+  }
+
+
+
   cout << "done after " << iev << " events" << endl;
   histoFile.Write();
   //histoFile->Close();
