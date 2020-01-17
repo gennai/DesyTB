@@ -64,9 +64,14 @@ def plotHisto(runNumber):
         myhisto = myfile.Get(histoname)
         try:
             if (histoname != "effvst3"):    
-                #if ("linqxvsxmym" in histoname ):
-                #    myhisto.SetMinimum(4.5)
-                #    myhisto.SetMaximum(12.0)
+                if ("linqxvsxmym" in histoname ):
+                    px = myhisto.ProfileX()
+                    px.SetTitle("Lin cluster ToT vs xmod")
+                    px.GetXaxis().SetTitle("x track mod [100 #mum]")
+                    px.GetXaxis().SetTitleOffset(1.2)
+                    px.GetYaxis().SetTitle("ToT")                
+                    px.Draw()
+                    c1.SaveAs(histoname+"Profile_Run"+runNumber+".pdf")    
                 #if ("linqxvsxmymaverage" in histoname):
                 #    myhisto.SetMinimum(8.5)
                 myhisto.Draw("colz")
