@@ -794,7 +794,7 @@ int main( int argc, char* argv[] )
 
   double qwid = qsigma; // [ToT] for Moyal in 150 um from x fitmoyal5.C+("linq0")
   double qxmax = 20.; // = exp(-qmin/qwid) for qmin = 4.8 ToT lower cutoff
-
+  double qxmaxMoyal = 0.04;
   //double qxmax = 0.04; // = exp(-qmin/qwid) for qmin = 4.8 ToT lower cutoff
 
   int iDUT = 0; // eudaq
@@ -2184,6 +2184,9 @@ int main( int argc, char* argv[] )
   TH1I linqHisto( "linq",
 		  "LIN linked clusters;LIN cluster signal [ToT];linked LIN clusters",
 		  80, 0, 80 );
+  TH1D linqxHisto( "linqx",
+		  "LIN linked clusters;LIN cluster Moyal signal [ToT];linked LIN clusters",
+		  1000000, 0., qxmaxMoyal );
   TH1I linq0Histo( "linq0",
 		   "LIN linked clusters;LIN normal cluster signal [ToT];linked LIN clusters",
 		   80, 0, 80 );
@@ -2285,11 +2288,11 @@ int main( int argc, char* argv[] )
   TProfile2D * linmoyalqxvsxmym = new
     TProfile2D( "linmoyalqxvsxmym",
 		"LIN cluster moyal signal vs xmod ymod;x track mod 100 [#mum];y track mod 100 [#mum];LIN <cluster signal> [ToT]",
-		50, 0, 100, 50, 0, 100, 0, qxmax );
+		50, 0, 100, 50, 0, 100, 0, qxmaxMoyal );
 	TProfile2D * linmoyalqxvsxmymHighStat = new
     TProfile2D( "linmoyalqxvsxmymhighstat",
 		"LIN cluster signal vs xmod ymod;x track mod 100 [#mum];y track mod 100 [#mum];LIN <cluster signal> [ToT]",
-		100, 0, 100, 100, 0, 100, 0, qxmax );
+		100, 0, 100, 100, 0, 100, 0, qxmaxMoyal );
 	TH2F * linqxvsxmymHighStat = new
     TH2F( "linqxvsxmymhighstat",
 		"LIN cluster signal vs xmod ymod;x track mod 100 [#mum];y track mod 100 [#mum];LIN <cluster signal> [ToT]",
@@ -4535,6 +4538,7 @@ TProfile2D * effvsxmymHighStat = new
 
 	    linqHisto.Fill( Q );
 	    linq0Histo.Fill( Q0 );
+		linqxHisto.Fill(exp( -Q / qwid ));
 	    linqxvsx.Fill( x4, Qx );
 	    linqxvsy.Fill( y4, Qx );
 	    linqxvsxy->Fill( x4, y4, Qx );
@@ -5978,7 +5982,7 @@ TProfile2D * effvsxmymHighStat = new
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // done
   cout <<"Fitting the sigma of the TOT"<<endl;
-  linqHisto.Fit("landau","landau0","",4,10);
+  linqHisto.Fit("landau","","",7,15);
   
 
   cout << endl << histoFile.GetName() << endl;
