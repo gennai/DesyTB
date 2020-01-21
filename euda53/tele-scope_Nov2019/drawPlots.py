@@ -1,10 +1,12 @@
 import ROOT
 import array
+import math
 
-
+mpvDict ={}
 
 def plotHisto(runNumber):
     histolist = [
+    "linqx",
     "effvsxmym",
     "effvsxmym",
     "effvsxy",
@@ -60,11 +62,16 @@ def plotHisto(runNumber):
     c1.SetRightMargin(0.2423698)
     c1.SetFrameBorderMode(0)
     c1.SetFrameBorderMode(0) 
-          
+
+    meanFromMoyalHisto = 0          
     for histoname in histolist:
         myhisto = myfile.Get(histoname)
         try:
-            if (histoname != "effvst3" and histoname != "linq"):                   
+            if (histoname == "linqx"):
+                    meanFromMoyalHisto = myhisto.GetMean()
+                    meanFromMoyalHisto = -math.log(meanFromMoyalHisto)
+
+            if (histoname != "effvst3" and histoname != "linq" and histoname != "linqx"):                                   
                 if ("linqxvsxmymaverage" in histoname):
                     px = myhisto.ProfileX()
                     px.SetTitle("Lin cluster ToT vs xmod")
@@ -97,31 +104,91 @@ def plotHisto(runNumber):
                 myhisto.GetXaxis().SetRangeUser(0.,30.)
                 myhisto.Draw()
                 mean = myhisto.GetMean()
-                myFitL = myhisto.Fit("landau","QS","",8,14)
-
-                print "MPV from fit for Run ",runNumber," = ",round(myFitL.Parameter(1),1), " and sigma = ", round(myFitL.Parameter(2),1) 
+                myFitL = myhisto.Fit("landau","QS","",7,15)
+                meanFromMoyalHisto = meanFromMoyalHisto*myFitL.Parameter(2)
+                print "MPV from fit for Run ",runNumber," = ",round(myFitL.Parameter(1),1), " and sigma = ", round(myFitL.Parameter(2),2) 
                 print "Mean value for Run ",runNumber," = ",round(mean,1)
+                print "MPV from Moyal ",runNumber, " = ", round(meanFromMoyalHisto,1)
                 xlabel = ROOT.TText()
                 xlabel.SetNDC()
                 xlabel.SetTextFont(2)
                 xlabel.SetTextColor(1)
-                xlabel.SetTextSize(0.05)
-                xlabel.SetTextAlign(22)
+                xlabel.SetTextSize(0.04)                
                 xlabel.SetTextAngle(0)
-                xlabel.DrawText(0.6, 0.6, "Mean = "+str(round(mean,1)))
-                xlabel.DrawText(0.6, 0.45, "MPV = "+str(round(myFitL.Parameter(1),1)))
-                xlabel.DrawText(0.6, 0.3, "Sigma = "+str(round(myFitL.Parameter(2),1)))
+                xlabel.DrawText(0.6, 0.7, "Mean = "+str(round(mean,1)))
+                xlabel.DrawText(0.6, 0.6, "Moyal= "+str(round(meanFromMoyalHisto,1)))
+                xlabel.DrawText(0.6, 0.5, "MPV = "+str(round(myFitL.Parameter(1),1)))
+                xlabel.DrawText(0.6, 0.4, "Sigma = "+str(round(myFitL.Parameter(2),2)))
                 c1.SaveAs(histoname+"_Run"+runNumber+".pdf")
+                mpvDict[runNumber] = [round(mean,1), round(meanFromMoyalHisto,1),round(myFitL.Parameter(1),1)]
         except:
             print histoname, "for run ",runNumber," is missing"
 
 
 #main part
 ROOT.gROOT.SetBatch()
+ROOT.gErrorIgnoreLevel = ROOT.kFatal
 ROOT.gStyle.SetOptStat(0)                                                                                                                                           
 
 #runlist = [37673,37674,37676,37677,37691,37692,37631,37722, 37723, 37724]
 runlist = [37692,37676,37674,37722,37724,37631]
-#runlist = [37565]
+#runlist = [37631,37722,37674,37676]
 for runNumber in runlist:
     plotHisto(runNumber)
+
+#print mpvDict
+zoneArray = array.array("d",runlist)                                                                                                                  
+zoneArrayError = array.array("d",[0.01 for a in range(len(runlist))])                                                                                           
+
+meanArray = array.array( 'd',[mpvDict[key][0] for key in mpvDict])                                                                                                        
+moyalArray = array.array( 'd',[mpvDict[key][1] for key in mpvDict])                                                                                                        
+mpvArray = array.array( 'd',[mpvDict[key][2] for key in mpvDict])                                                                                                        
+meanArrayErrors = array.array("d",[0.05 for a in range(len(runlist))])   
+
+
+
+#Plotting the various Landau approx
+c2 = ROOT.TCanvas("c2","",900,600)
+c2.SetFillColor(0)
+c2.SetBorderMode(0)
+c2.SetBorderSize(2)
+c2.SetRightMargin(0.2423698)
+c2.SetFrameBorderMode(0)
+c2.SetFrameBorderMode(0) 
+h1 = ROOT.TH2F("h1","",len(runlist),37620,37740,10,10.0,13.0)                                                                                                          
+h1.GetXaxis().SetTitle("Runs")               
+h1.GetXaxis().SetTitleOffset(1.2)                                                                            
+h1.GetXaxis().SetLabelOffset(0.01)                                                                            
+h1.GetYaxis().SetTitleOffset(1.2)
+
+h1.GetYaxis().SetTitle("Mean/MPV/Moyal")                                                                                                        
+h1.Draw()                                                                                                                                             
+gr = ROOT.TGraphErrors( int(len(runlist)),zoneArray,meanArray,zoneArrayError,meanArrayErrors )                                                          
+gr.SetMarkerStyle(21)                                                                                                                                 
+gr.SetMarkerColor(4)                                                                                                                                  
+gr.SetMarkerSize(2.)                                                                                                                                  
+gr.Draw("Psame")            
+gr1 = ROOT.TGraphErrors( int(len(runlist)),zoneArray,moyalArray,zoneArrayError,meanArrayErrors )                                                          
+gr1.SetMarkerStyle(22)                                                                                                                                 
+gr1.SetMarkerColor(2)                                                                                                                                  
+gr1.SetMarkerSize(2.)                                                                                                                                  
+gr1.Draw("Psame")            
+gr2 = ROOT.TGraphErrors( int(len(runlist)),zoneArray,mpvArray,zoneArrayError,meanArrayErrors )                                                          
+gr2.SetMarkerStyle(23)                                                                                                                                 
+gr2.SetMarkerColor(3)                                                                                                                                  
+gr2.SetMarkerSize(2.)                                                                                                                                  
+gr2.Draw("Psame") 
+xl1=.8                                                                                                                                               
+yl1=0.73                                                                                                                                              
+xl2=xl1+.25                                                                                                                                           
+yl2=yl1+.15                                                                                                                                           
+x3l1 = xl1 + 0.1                                                                                                                                      
+leg1 = ROOT.TLegend(xl1,yl1,xl2,yl2)                                                                                                                  
+leg1.SetBorderSize(0)   
+leg1.AddEntry(gr,"Mean","p")                              
+leg1.AddEntry(gr2,"MPV","p")     
+leg1.AddEntry(gr1,"Moyal","p")                              
+                         
+leg1.Draw()
+
+c2.SaveAs("Landau_MPVs.pdf") 
