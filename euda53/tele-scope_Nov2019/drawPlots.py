@@ -13,6 +13,7 @@ def plotHisto(runNumber):
     "linqxvsxmym",
     "linqxvsxmymaverage",
     "linqxvsxy",
+    "linq",
     "dutdxdy",
     "dutdyc2",
     "effvst3",
@@ -63,8 +64,8 @@ def plotHisto(runNumber):
     for histoname in histolist:
         myhisto = myfile.Get(histoname)
         try:
-            if (histoname != "effvst3"):    
-                if ("linqxvsxmym" in histoname ):
+            if (histoname != "effvst3" and histoname != "linq"):                   
+                if ("linqxvsxmymaverage" in histoname):
                     px = myhisto.ProfileX()
                     px.SetTitle("Lin cluster ToT vs xmod")
                     px.GetXaxis().SetTitle("x track mod [100 #mum]")
@@ -72,8 +73,7 @@ def plotHisto(runNumber):
                     px.GetYaxis().SetTitle("ToT")                
                     px.Draw()
                     c1.SaveAs(histoname+"Profile_Run"+runNumber+".pdf")    
-                #if ("linqxvsxmymaverage" in histoname):
-                #    myhisto.SetMinimum(8.5)
+
                 myhisto.Draw("colz")
                 myhisto.GetZaxis().SetTitleOffset(1.8)
                 if (histoname == "effvsxy"):                   
@@ -91,8 +91,27 @@ def plotHisto(runNumber):
                 px.Draw()
                 c1.SaveAs(histoname+"Profile_Run"+runNumber+".pdf")    
             if (histoname == "effvst3"):
-                myFit = myhisto.Fit("pol0","QS")
+                myFit = myhisto.Fit("pol0","QS")            
                 print "eff media per Run ", runNumber," = ",round(myFit.Parameter(0),4), " +/- ", round(myFit.ParError(0),4)
+            if (histoname == "linq"):
+                myhisto.GetXaxis().SetRangeUser(0.,30.)
+                myhisto.Draw()
+                mean = myhisto.GetMean()
+                myFitL = myhisto.Fit("landau","QS","",8,14)
+
+                print "MPV from fit for Run ",runNumber," = ",round(myFitL.Parameter(1),1), " and sigma = ", round(myFitL.Parameter(2),1) 
+                print "Mean value for Run ",runNumber," = ",round(mean,1)
+                xlabel = ROOT.TText()
+                xlabel.SetNDC()
+                xlabel.SetTextFont(2)
+                xlabel.SetTextColor(1)
+                xlabel.SetTextSize(0.05)
+                xlabel.SetTextAlign(22)
+                xlabel.SetTextAngle(0)
+                xlabel.DrawText(0.6, 0.6, "Mean = "+str(round(mean,1)))
+                xlabel.DrawText(0.6, 0.45, "MPV = "+str(round(myFitL.Parameter(1),1)))
+                xlabel.DrawText(0.6, 0.3, "Sigma = "+str(round(myFitL.Parameter(2),1)))
+                c1.SaveAs(histoname+"_Run"+runNumber+".pdf")
         except:
             print histoname, "for run ",runNumber," is missing"
 
