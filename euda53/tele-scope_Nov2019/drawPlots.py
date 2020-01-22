@@ -1,6 +1,7 @@
 import ROOT
 import array
 import math
+import os
 
 mpvDict ={}
 
@@ -80,7 +81,7 @@ def plotHisto(runNumber):
                     px.GetXaxis().SetTitleOffset(1.2)
                     px.GetYaxis().SetTitle("ToT")                
                     px.Draw()
-                    c1.SaveAs(histoname+"Profile_Run"+runNumber+".pdf")    
+                    c1.SaveAs("Run_"+runNumber+"/"+histoname+"Profile_Run"+runNumber+".pdf")    
                 """
                 myhisto.Draw("colz")
                 myhisto.GetZaxis().SetTitleOffset(1.8)
@@ -89,7 +90,7 @@ def plotHisto(runNumber):
                     pline.SetLineColor(2)
                     pline.SetLineWidth(2)
                     pline.Draw()
-                c1.SaveAs(histoname+"_Run"+runNumber+".pdf")  
+                c1.SaveAs("Run_"+runNumber+"/"+histoname+"_Run"+runNumber+".pdf")  
             """
             if (histoname == "linnpxvsxmym"):                
                 px = myhisto.ProfileX()
@@ -98,7 +99,7 @@ def plotHisto(runNumber):
                 px.GetXaxis().SetTitleOffset(1.2)
                 px.GetYaxis().SetTitle("Cluster size")                
                 px.Draw()
-                c1.SaveAs(histoname+"Profile_Run"+runNumber+".pdf")  
+                c1.SaveAs("Run_"+runNumber+"/"+histoname+"Profile_Run"+runNumber+".pdf")  
             """     
             if (histoname == "effvst3"):
                 myFit = myhisto.Fit("pol0","QS")            
@@ -132,7 +133,7 @@ def plotHisto(runNumber):
                 xlabel.DrawText(0.6, 0.6, "Moyal= "+str(round(meanFromMoyalHisto,1)))
                 xlabel.DrawText(0.6, 0.5, "MPV = "+str(round(myFitL.Parameter(1),1)))
                 xlabel.DrawText(0.6, 0.4, "Sigma = "+str(round(myFitL.Parameter(2),2)))
-                c1.SaveAs(histoname+"_Run"+runNumber+".pdf")
+                c1.SaveAs("Run_"+runNumber+"/"+histoname+"_Run"+runNumber+".pdf")
                 mpvDict[runNumber] = [round(mean,1), round(meanFromMoyalHisto,1),round(myFitL.Parameter(1),1)]
         except:
             print histoname, "for run ",runNumber," is missing"
@@ -147,7 +148,24 @@ ROOT.gStyle.SetOptStat(0)
 runlist = [37692,37676,37674,37722,37724,37631,37683,37643]
 #runlist = [37683,37643]
 runlist.sort()
+
 for runNumber in runlist:
+    mydir = "Run_"+str(runNumber)
+    if os.path.exists(mydir):
+        try:
+            os.system('rm -rf %s' % mydir)
+        except OSError:
+            print ("Removal of  of the directory %s failed" % mydir)
+        try:
+            os.mkdir(mydir)
+        except OSError:
+            print ("Creation of the directory %s failed" % path)
+    else:
+        try:
+            os.mkdir(mydir)
+        except OSError:
+            print ("Creation of the directory %s failed" % path)
+
     plotHisto(runNumber)
 
 zoneArray = array.array("d",runlist)                                                                                                                  
