@@ -72,6 +72,7 @@ def plotHisto(runNumber):
                     meanFromMoyalHisto = -math.log(meanFromMoyalHisto)
 
             if (histoname != "effvst3" and histoname != "linq" and histoname != "linqx"):                                   
+                """
                 if ("linqxvsxmymaverage" in histoname):
                     px = myhisto.ProfileX()
                     px.SetTitle("Lin cluster ToT vs xmod")
@@ -80,7 +81,7 @@ def plotHisto(runNumber):
                     px.GetYaxis().SetTitle("ToT")                
                     px.Draw()
                     c1.SaveAs(histoname+"Profile_Run"+runNumber+".pdf")    
-
+                """
                 myhisto.Draw("colz")
                 myhisto.GetZaxis().SetTitleOffset(1.8)
                 if (histoname == "effvsxy"):                   
@@ -89,6 +90,7 @@ def plotHisto(runNumber):
                     pline.SetLineWidth(2)
                     pline.Draw()
                 c1.SaveAs(histoname+"_Run"+runNumber+".pdf")  
+            """
             if (histoname == "linnpxvsxmym"):                
                 px = myhisto.ProfileX()
                 px.SetTitle("Lin cluster size vs xmod")
@@ -96,7 +98,8 @@ def plotHisto(runNumber):
                 px.GetXaxis().SetTitleOffset(1.2)
                 px.GetYaxis().SetTitle("Cluster size")                
                 px.Draw()
-                c1.SaveAs(histoname+"Profile_Run"+runNumber+".pdf")    
+                c1.SaveAs(histoname+"Profile_Run"+runNumber+".pdf")  
+            """     
             if (histoname == "effvst3"):
                 myFit = myhisto.Fit("pol0","QS")            
                 print "eff media per Run ", runNumber," = ",round(myFit.Parameter(0),4), " +/- ", round(myFit.ParError(0),4)
@@ -104,7 +107,17 @@ def plotHisto(runNumber):
                 myhisto.GetXaxis().SetRangeUser(0.,30.)
                 myhisto.Draw()
                 mean = myhisto.GetMean()
-                myFitL = myhisto.Fit("landau","QS","",7,15)
+                fitxmin = 7
+                fitxmax = 15
+                if (runNumber == "37683"):
+                    fitxmin = 9.
+                    fitxmax = 15.
+                if (runNumber == "37643"):
+                    fitxmin = 10.
+                    fitxmax = 16.
+                myFitL = myhisto.Fit("landau","QS","",fitxmin,fitxmax)
+
+                #myFitL.Print()
                 meanFromMoyalHisto = meanFromMoyalHisto*myFitL.Parameter(2)
                 print "MPV from fit for Run ",runNumber," = ",round(myFitL.Parameter(1),1), " and sigma = ", round(myFitL.Parameter(2),2) 
                 print "Mean value for Run ",runNumber," = ",round(mean,1)
@@ -131,21 +144,21 @@ ROOT.gErrorIgnoreLevel = ROOT.kFatal
 ROOT.gStyle.SetOptStat(0)                                                                                                                                           
 
 #runlist = [37673,37674,37676,37677,37691,37692,37631,37722, 37723, 37724]
-runlist = [37692,37676,37674,37722,37724,37631]
-#runlist = [37631,37722,37674,37676]
+runlist = [37692,37676,37674,37722,37724,37631,37683,37643]
+#runlist = [37683,37643]
+runlist.sort()
 for runNumber in runlist:
     plotHisto(runNumber)
 
-#print mpvDict
 zoneArray = array.array("d",runlist)                                                                                                                  
 zoneArrayError = array.array("d",[0.01 for a in range(len(runlist))])                                                                                           
 
-meanArray = array.array( 'd',[mpvDict[key][0] for key in mpvDict])                                                                                                        
-moyalArray = array.array( 'd',[mpvDict[key][1] for key in mpvDict])                                                                                                        
-mpvArray = array.array( 'd',[mpvDict[key][2] for key in mpvDict])                                                                                                        
+meanArray = array.array( 'd',[mpvDict[str(key)][0] for key in runlist])                                                                                                        
+moyalArray = array.array( 'd',[mpvDict[str(key)][1] for key in runlist])                                                                                                        
+mpvArray = array.array( 'd',[mpvDict[str(key)][2] for key in runlist])                                                                                                        
 meanArrayErrors = array.array("d",[0.05 for a in range(len(runlist))])   
-
-
+#print zoneArray
+#print meanArray
 
 #Plotting the various Landau approx
 c2 = ROOT.TCanvas("c2","",900,600)
@@ -155,28 +168,29 @@ c2.SetBorderSize(2)
 c2.SetRightMargin(0.2423698)
 c2.SetFrameBorderMode(0)
 c2.SetFrameBorderMode(0) 
-h1 = ROOT.TH2F("h1","",len(runlist),37620,37740,10,10.0,13.0)                                                                                                          
+h1 = ROOT.TH2F("h1","",len(runlist),37620,37740,100,8.0,15.0)                                                                                                          
 h1.GetXaxis().SetTitle("Runs")               
 h1.GetXaxis().SetTitleOffset(1.2)                                                                            
 h1.GetXaxis().SetLabelOffset(0.01)                                                                            
 h1.GetYaxis().SetTitleOffset(1.2)
 
+markerSize = 1.3
 h1.GetYaxis().SetTitle("Mean/MPV/Moyal")                                                                                                        
 h1.Draw()                                                                                                                                             
 gr = ROOT.TGraphErrors( int(len(runlist)),zoneArray,meanArray,zoneArrayError,meanArrayErrors )                                                          
 gr.SetMarkerStyle(21)                                                                                                                                 
 gr.SetMarkerColor(4)                                                                                                                                  
-gr.SetMarkerSize(2.)                                                                                                                                  
+gr.SetMarkerSize(markerSize)                                                                                                                                  
 gr.Draw("Psame")            
 gr1 = ROOT.TGraphErrors( int(len(runlist)),zoneArray,moyalArray,zoneArrayError,meanArrayErrors )                                                          
 gr1.SetMarkerStyle(22)                                                                                                                                 
 gr1.SetMarkerColor(2)                                                                                                                                  
-gr1.SetMarkerSize(2.)                                                                                                                                  
+gr1.SetMarkerSize(markerSize)                                                                                                                                  
 gr1.Draw("Psame")            
 gr2 = ROOT.TGraphErrors( int(len(runlist)),zoneArray,mpvArray,zoneArrayError,meanArrayErrors )                                                          
 gr2.SetMarkerStyle(23)                                                                                                                                 
 gr2.SetMarkerColor(3)                                                                                                                                  
-gr2.SetMarkerSize(2.)                                                                                                                                  
+gr2.SetMarkerSize(markerSize)                                                                                                                                  
 gr2.Draw("Psame") 
 xl1=.8                                                                                                                                               
 yl1=0.73                                                                                                                                              

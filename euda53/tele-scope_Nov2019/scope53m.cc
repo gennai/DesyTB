@@ -794,7 +794,7 @@ int main( int argc, char* argv[] )
 
   double qwid = qsigma; // [ToT] for Moyal in 150 um from x fitmoyal5.C+("linq0")
   double qxmax = 20.; // = exp(-qmin/qwid) for qmin = 4.8 ToT lower cutoff
-  double qxmaxMoyal = 0.04;
+  double qxmaxMoyal = 0.02; //0.04;
   //double qxmax = 0.04; // = exp(-qmin/qwid) for qmin = 4.8 ToT lower cutoff
 
   int iDUT = 0; // eudaq
@@ -5981,10 +5981,6 @@ TProfile2D * effvsxmymHighStat = new
  
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // done
-  cout <<"Fitting the sigma of the TOT"<<endl;
-  linqHisto.Fit("landau","","",7,15);
-  
-
   cout << endl << histoFile.GetName() << endl;
 
   cout << endl;
