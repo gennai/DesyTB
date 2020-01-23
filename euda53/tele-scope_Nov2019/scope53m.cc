@@ -338,6 +338,7 @@ int main( int argc, char* argv[] )
   int rot90 = 0; // default is straight
   int modrun = 0;
   double qsigma = 1.5;
+  double qsigmaMoyal = 1.5;
 
   ifstream runsFile( "runs.dat" );
 
@@ -361,7 +362,8 @@ int main( int argc, char* argv[] )
     string TILT( "tilt" );
     string FIFTY( "fifty" );
     string ROT90( "rot90" );
-	string QSIGMA("qsigma");
+	string QSIGMA("qwid");
+	string QSIGMAMOYAL("qwidMoyal");
     bool found = 0;
 
     while( ! runsFile.eof() ) {
@@ -402,6 +404,10 @@ int main( int argc, char* argv[] )
       }
 	  if( tag == QSIGMA) {
 	tokenizer >> qsigma;
+	continue;
+      }
+if( tag == QSIGMAMOYAL) {
+	tokenizer >> qsigmaMoyal;
 	continue;
       }
 
@@ -445,6 +451,7 @@ int main( int argc, char* argv[] )
 	<< "  rot90 " << rot90 << endl
 	<< "  modrun " << modrun << endl
 	<< "  qsigma " << qsigma <<endl
+	<< "  qsigmaMoyal " << qsigmaMoyal <<endl
 	;
     else {
       cout << "run " << run << " not found in runs.dat" << endl;
@@ -792,7 +799,8 @@ int main( int argc, char* argv[] )
 
   const double wt = atan(1.0) / 45.0; // pi/180 deg
 
-  double qwid = qsigma; // [ToT] for Moyal in 150 um from x fitmoyal5.C+("linq0")
+  double qwid = qsigma; // [ToT] for Moyal in 150 um from x fitmoyal5.C+("linq0")  
+  double qwidmoyal = qsigmaMoyal;
   double qxmax = 20.; // = exp(-qmin/qwid) for qmin = 4.8 ToT lower cutoff
   double qxmaxMoyal = 0.02; //0.04;
   //double qxmax = 0.04; // = exp(-qmin/qwid) for qmin = 4.8 ToT lower cutoff
@@ -2186,6 +2194,9 @@ int main( int argc, char* argv[] )
 		  80, 0, 80 );
   TH1D linqxHisto( "linqx",
 		  "LIN linked clusters;LIN cluster Moyal signal [ToT];linked LIN clusters",
+		  1000000, 0., qxmaxMoyal );
+  TH1D linqxMoyalHisto( "linqxmoyal",
+		  "LIN linked clusters;LIN cluster Moyal signal from moyal width [ToT];linked LIN clusters",
 		  1000000, 0., qxmaxMoyal );
   TH1I linq0Histo( "linq0",
 		   "LIN linked clusters;LIN normal cluster signal [ToT];linked LIN clusters",
@@ -4539,6 +4550,7 @@ TProfile2D * effvsxmymHighStat = new
 	    linqHisto.Fill( Q );
 	    linq0Histo.Fill( Q0 );
 		linqxHisto.Fill(exp( -Q / qwid ));
+		linqxMoyalHisto.Fill(exp( -Q / qwidmoyal ));
 	    linqxvsx.Fill( x4, Qx );
 	    linqxvsy.Fill( y4, Qx );
 	    linqxvsxy->Fill( x4, y4, Qx );
