@@ -802,7 +802,9 @@ if( tag == QSIGMAMOYAL) {
   double qwid = qsigma; // [ToT] for Moyal in 150 um from x fitmoyal5.C+("linq0")  
   double qwidmoyal = qsigmaMoyal;
   double qxmax = 20.; // = exp(-qmin/qwid) for qmin = 4.8 ToT lower cutoff
-  double qxmaxMoyal = 0.02; //0.04;
+  double qxmaxMoyal = 0.005;
+  if (DUTturn > 2) 
+  	qxmaxMoyal = 0.04; //0.005 for 0 deg //0.04 for tilted
   //double qxmax = 0.04; // = exp(-qmin/qwid) for qmin = 4.8 ToT lower cutoff
 
   int iDUT = 0; // eudaq
@@ -4549,7 +4551,7 @@ TProfile2D * effvsxmymHighStat = new
 
 	    linqHisto.Fill( Q );
 	    linq0Histo.Fill( Q0 );
-		linqxHisto.Fill(exp( -Q / qwid ));
+		linqxHisto.Fill(exp( -Q / qwid )); 
 		linqxMoyalHisto.Fill(exp( -Q / qwidmoyal ));
 	    linqxvsx.Fill( x4, Qx );
 	    linqxvsy.Fill( y4, Qx );
@@ -4597,9 +4599,9 @@ TProfile2D * effvsxmymHighStat = new
 	      linnrowvsym.Fill( ymod*1E3, c->nrow );
 
 	    linqxvsxmymaverage->Fill( xmod*1E3, ymod*1E3, Qx );
-	    linmoyalqxvsxmym->Fill(xmod*1E3, ymod*1E3, exp(-Qx/qwid));
+	    linmoyalqxvsxmym->Fill(xmod*1E3, ymod*1E3, exp(-Qx/qwidmoyal));
 	    //linqxvsxmymHighStat->Fill( xmod*1E3, ymod*1E3, Qx );
-	    linmoyalqxvsxmymHighStat->Fill( xmod*1E3, ymod*1E3, exp(-Qx/qwid) );
+	    linmoyalqxvsxmymHighStat->Fill( xmod*1E3, ymod*1E3, exp(-Qx/qwidmoyal) );
 	    linqxvsxm.Fill( xmod*1E3, Qx );
 	    linqxvsxm5.Fill( xmod5*1E3, Qx );
 	    linqxvsym.Fill( ymod*1E3, Qx );
@@ -5290,7 +5292,7 @@ TProfile2D * effvsxmymHighStat = new
   int nybins = linmoyalqxvsxmym->GetNbinsY();
   for (int i=1;i< nxbins+1;i++){
 	  for (int j=1;j< nybins+1;j++){
-		float qmpv = -qwid*log(linmoyalqxvsxmym->GetBinContent(i,j));
+		float qmpv = -qwidmoyal*log(linmoyalqxvsxmym->GetBinContent(i,j));
 		linqxvsxmym->SetBinContent(i,j,qmpv);	
 
 	  }
@@ -5300,7 +5302,7 @@ TProfile2D * effvsxmymHighStat = new
   nybins = linmoyalqxvsxmymHighStat->GetNbinsY();
   for (int i=1;i< nxbins+1;i++){
 	  for (int j=1;j< nybins+1;j++){
-		float qmpv = -qwid*log(linmoyalqxvsxmymHighStat->GetBinContent(i,j));
+		float qmpv = -qwidmoyal*log(linmoyalqxvsxmymHighStat->GetBinContent(i,j));
 		linqxvsxmymHighStat->SetBinContent(i,j,qmpv);	
 
 	  }

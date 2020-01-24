@@ -22,7 +22,7 @@ def fitLandauGauss( x, par ):
     # Landau:
 
     invsq2pi = 0.3989422804014   #// (2 pi)^(-1/2)
-    mpshift  = -0.22278298       #// Landau maximum location
+    mpshift  = -0.152278298       #// Landau maximum location
 
     #MP shift correction:
 
@@ -139,7 +139,7 @@ def plotHisto(runNumber):
     c1.SetFillColor(0)
     c1.SetBorderMode(0)
     c1.SetBorderSize(2)
-    c1.SetRightMargin(0.2423698)
+    c1.SetRightMargin(0.15423698)
     c1.SetFrameBorderMode(0)
     c1.SetFrameBorderMode(0) 
 
@@ -171,7 +171,7 @@ def plotHisto(runNumber):
                 myFit = myhisto.Fit("pol0","QS")            
                 print "eff media per Run ", runNumber," = ",round(myFit.Parameter(0),4), " +/- ", round(myFit.ParError(0),4)
             if (histoname == "linq"):
-                myhisto.GetXaxis().SetRangeUser(0.,30.)
+                #myhisto.GetXaxis().SetRangeUser(0.,20.)
                 myhisto.Draw()
                 mean = myhisto.GetMean()
                 fitxmin = 7
@@ -228,6 +228,7 @@ def plotHisto(runNumber):
                 print "###########"
                 
                 print "MPV from fit for Run ",runNumber," = ",round(myFitL.Parameter(1),1), " and sigma = ", round(myFitL.Parameter(2),2) 
+                print "MPV from Landau+Gaussian fit for Run ",runNumber," = ", round(myFitLG.Parameter(0),1)
                 print "Mean value for Run ",runNumber," = ",round(mean,1)
                 print "MPV from Moyal using Landau width ",runNumber, " = ", round(meanFromMoyalHisto,1)
                 print "MPV from Moyal using Moyal width ", runNumber, " = ", round(meanFromMoyalHistoWithMoyalWidth,1)
@@ -244,7 +245,7 @@ def plotHisto(runNumber):
                 xlabel.DrawText(0.6, 0.4, "Sigma = "+str(round(myFitL.Parameter(2),2)))
                 """
                 c1.SaveAs("Run_"+runNumber+"/"+histoname+"_Run"+runNumber+".pdf")
-                mpvDict[runNumber] = [round(mean,1), round(meanFromMoyalHisto,1),round(myFitL.Parameter(1),1), round(meanFromMoyalHistoWithMoyalWidth,1)]
+                mpvDict[runNumber] = [round(mean,1), round(meanFromMoyalHisto,1),round(myFitL.Parameter(1),1), round(meanFromMoyalHistoWithMoyalWidth,1),round(myFitLG.Parameter(0),1)]
         except:
             print histoname, "for run ",runNumber," is missing"
 
@@ -255,8 +256,8 @@ ROOT.gErrorIgnoreLevel = ROOT.kFatal
 ROOT.gStyle.SetOptStat(0)                                                                                                                                           
 
 #runlist = [37673,37674,37676,37677,37691,37692,37631,37722, 37723, 37724]
-#runlist = [37692,37676,37674,37722,37724,37631,37683,37643]
-runlist = [37683,37643,37722,37674,37676,37722]
+runlist = [37692,37676,37674,37722,37724,37631,37683,37643]
+
 runlist.sort()
 
 for runNumber in runlist:
@@ -280,10 +281,55 @@ for runNumber in runlist:
 
 zoneArray = array.array("d",runlist)                                                                                                                  
 zoneArrayError = array.array("d",[0.01 for a in range(len(runlist))])                                                                                           
+deltaMoyalWMoyal = [(mpvDict[str(key)][3] - mpvDict[str(key)][4])/mpvDict[str(key)][4] for key in runlist]
+deltaMoyalWLandau = [(mpvDict[str(key)][1] - mpvDict[str(key)][4])/mpvDict[str(key)][4] for key in runlist]
+deltaLvsLG = [(mpvDict[str(key)][2] - mpvDict[str(key)][4])/mpvDict[str(key)][4] for key in runlist]
+deltaMean = [(mpvDict[str(key)][0] - mpvDict[str(key)][4])/mpvDict[str(key)][4] for key in runlist]
+
+deltaDistribMWM = ROOT.TH1F("deltaDistribMWM","",10,-0.15,0.15)
+deltaDistribMWL = ROOT.TH1F("deltaDistribMWL","",10,-0.15,0.15)
+deltaDistribMean = ROOT.TH1F("deltaDistribMean","",10,-0.15,0.15)
+deltaDistribLvsLG = ROOT.TH1F("deltaDistribLvsLG","",10,-0.15,0.15)
+for i in range(len(runlist)):
+    deltaDistribLvsLG.Fill(deltaLvsLG[i])
+    deltaDistribMWM.Fill(deltaMoyalWMoyal[i])
+    deltaDistribMWL.Fill(deltaMoyalWLandau[i])
+    deltaDistribMean.Fill(deltaMean[i])
+
+c3 =  ROOT.TCanvas("c2","",900,600)
+deltaDistribLvsLG.GetXaxis().SetTitle("(Estimation - MPV)/MPV")
+deltaDistribLvsLG.SetLineColor(3)
+deltaDistribLvsLG.SetFillColor(3)
+deltaDistribLvsLG.Draw()
+deltaDistribMean.SetLineColor(1)
+deltaDistribMean.SetFillColor(1)
+deltaDistribMean.SetFillStyle(22)
+deltaDistribMean.Draw("same")
+deltaDistribMWM.SetLineColor(6)
+deltaDistribMWM.SetFillColor(6)
+deltaDistribMWM.Draw("same")
+deltaDistribMWL.SetLineColor(2)
+deltaDistribMWL.SetFillColor(2)
+deltaDistribMWL.Draw("same")
+xl1=.15                                                                                                                                               
+yl1=0.73                                                                                                                                              
+xl2=xl1+.25                                                                                                                                           
+yl2=yl1+.15                                                                                                                                           
+x3l1 = xl1 + 0.1                                                                                                                                      
+leg2 = ROOT.TLegend(xl1,yl1,xl2,yl2)                                                                                                                  
+leg2.SetBorderSize(0)   
+leg2.AddEntry(deltaDistribMean,"Mean","l")                              
+leg2.AddEntry(deltaDistribMWL,"Moyal w/ Landau #sigma","l") 
+leg2.AddEntry(deltaDistribMWM,"Moyal w/ Moyal #sigma","l")                              
+                         
+leg2.Draw()
+
+c3.SaveAs("DeltaDistrib.pdf")   
 
 meanArray = array.array( 'd',[mpvDict[str(key)][0] for key in runlist])                                                                                                        
 moyalArray = array.array( 'd',[mpvDict[str(key)][1] for key in runlist])                                                                                                        
 mpvArray = array.array( 'd',[mpvDict[str(key)][2] for key in runlist])                                                                                                        
+mpvLGArray = array.array( 'd',[mpvDict[str(key)][4] for key in runlist])                                                                                                        
 moyalWithMoyalSigmaArray = array.array( 'd',[mpvDict[str(key)][3] for key in runlist])                                                                                                        
 meanArrayErrors = array.array("d",[0.05 for a in range(len(runlist))])   
 
@@ -293,7 +339,7 @@ c2 = ROOT.TCanvas("c2","",900,600)
 c2.SetFillColor(0)
 c2.SetBorderMode(0)
 c2.SetBorderSize(2)
-c2.SetRightMargin(0.2423698)
+c2.SetRightMargin(0.15423698)
 c2.SetFrameBorderMode(0)
 c2.SetFrameBorderMode(0) 
 h1 = ROOT.TH2F("h1","",len(runlist),37620,37740,100,8.0,15.0)                                                                                                          
@@ -329,7 +375,19 @@ gr3.SetMarkerColor(6)
 gr3.SetLineColor(6)                                                                                                                                
 gr3.SetMarkerSize(markerSize)                                                                                                                                  
 gr3.Draw("lPSame") 
-xl1=.8                                                                                                                                               
+gr5 = ROOT.TGraphErrors( int(len(runlist)),zoneArray,mpvLGArray,zoneArrayError,meanArrayErrors )                                                          
+gr5.SetMarkerStyle(26)                                                                                                                                 
+gr5.SetMarkerColor(7)  
+gr5.SetLineColor(7)                                                                                                                                
+gr5.SetMarkerSize(markerSize)                                                                                                                                  
+gr5.Draw("lPSame") 
+gr3 = ROOT.TGraphErrors( int(len(runlist)),zoneArray,moyalWithMoyalSigmaArray,zoneArrayError,meanArrayErrors )                                                          
+gr3.SetMarkerStyle(24)                                                                                                                                 
+gr3.SetMarkerColor(6)  
+gr3.SetLineColor(6)                                                                                                                                
+gr3.SetMarkerSize(markerSize)                                                                                                                                  
+gr3.Draw("lPSame") 
+xl1=.77                                                                                                                                               
 yl1=0.73                                                                                                                                              
 xl2=xl1+.25                                                                                                                                           
 yl2=yl1+.15                                                                                                                                           
@@ -337,9 +395,10 @@ x3l1 = xl1 + 0.1
 leg1 = ROOT.TLegend(xl1,yl1,xl2,yl2)                                                                                                                  
 leg1.SetBorderSize(0)   
 leg1.AddEntry(gr,"Mean","p")                              
-leg1.AddEntry(gr2,"MPV","p")     
-leg1.AddEntry(gr1,"Moyal","p") 
-leg1.AddEntry(gr3,"MoyalWithMoyalSigma","p")                              
+leg1.AddEntry(gr2,"MPV Landau","p")     
+leg1.AddEntry(gr5,"MPV L+G","p")     
+leg1.AddEntry(gr1,"Moyal w/ Landau #sigma","p") 
+leg1.AddEntry(gr3,"Moyal w/ Moyal #sigma","p")                              
                          
 leg1.Draw()
 
