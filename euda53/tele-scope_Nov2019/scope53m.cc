@@ -801,8 +801,8 @@ if( tag == QSIGMAMOYAL) {
 
   double qwid = qsigma; // [ToT] for Moyal in 150 um from x fitmoyal5.C+("linq0")  
   double qwidmoyal = qsigmaMoyal;
-  double qxmax = 20.; // = exp(-qmin/qwid) for qmin = 4.8 ToT lower cutoff
-  double qxmaxMoyal = 0.005;
+  double qxmax = 20.; //20.; 
+  double qxmaxMoyal = 0.04;
   if (DUTturn > 2) 
   	qxmaxMoyal = 0.04; //0.005 for 0 deg //0.04 for tilted
   //double qxmax = 0.04; // = exp(-qmin/qwid) for qmin = 4.8 ToT lower cutoff

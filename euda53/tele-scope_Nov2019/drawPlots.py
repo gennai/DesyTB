@@ -160,6 +160,9 @@ def plotHisto(runNumber):
             if (histoname != "effvst3" and histoname != "linq" and histoname != "linqx" and histoname != "linqxmoyal"):                                                  
                 myhisto.Draw("colz")
                 myhisto.GetZaxis().SetTitleOffset(1.8)
+                #if (histoname == "linqxvsxmym"):
+                    #myhisto.SetMaximum(11.)
+                    #myhisto.SetMinimum(9.)
                 if (histoname == "effvsxy"):                   
                     pline = ROOT.TPolyLine(5,xp,yp)
                     pline.SetLineColor(2)
@@ -318,9 +321,11 @@ yl2=yl1+.15
 x3l1 = xl1 + 0.1                                                                                                                                      
 leg2 = ROOT.TLegend(xl1,yl1,xl2,yl2)                                                                                                                  
 leg2.SetBorderSize(0)   
-leg2.AddEntry(deltaDistribMean,"Mean","l")                              
+leg2.AddEntry(deltaDistribMean,"Mean","l")       
+leg2.AddEntry(deltaDistribLvsLG,"Simple Landau","l")                         
 leg2.AddEntry(deltaDistribMWL,"Moyal w/ Landau #sigma","l") 
-leg2.AddEntry(deltaDistribMWM,"Moyal w/ Moyal #sigma","l")                              
+leg2.AddEntry(deltaDistribMWM,"Moyal w/ Moyal #sigma","l")   
+                            
                          
 leg2.Draw()
 
