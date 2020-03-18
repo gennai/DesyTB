@@ -803,8 +803,6 @@ if( tag == QSIGMAMOYAL) {
   double qwidmoyal = qsigmaMoyal;
   double qxmax = 20.; //20.; 
   double qxmaxMoyal = 0.04;
-  if (DUTturn > 2) 
-  	qxmaxMoyal = 0.04; //0.005 for 0 deg //0.04 for tilted
   //double qxmax = 0.04; // = exp(-qmin/qwid) for qmin = 4.8 ToT lower cutoff
 
   int iDUT = 0; // eudaq
