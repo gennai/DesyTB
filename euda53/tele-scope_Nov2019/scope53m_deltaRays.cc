@@ -26,6 +26,7 @@
 
 #include <sstream> // stringstream
 #include <fstream> // filestream
+#include <iostream>
 #include <set>
 #include <cmath>
 
@@ -341,6 +342,14 @@ int main( int argc, char* argv[] )
   double qsigmaMoyal = 1.5;
 
   ifstream runsFile( "runs.dat" );
+  ofstream deltaRays( "deltaRays.csv");
+   if( deltaRays.bad() || ! deltaRays.is_open() ) {
+    cout << "Error opening deltaRays.csv" << endl;
+    return 1;
+  }
+ //deltaRays << "DeltaRays cols and rows\n";
+  deltaRays<<"index,row,col,tot\n";
+  int nEvent=0;
 
   if( runsFile.bad() || ! runsFile.is_open() ) {
     cout << "Error opening runs.dat" << endl;
@@ -4391,6 +4400,15 @@ TProfile2D * effvsxmymHighStat = new
 
 	int npx = c->size;
 
+	if (npx > 10) {
+		int i =0;
+	for(vector<pixel>::iterator px = c->vpix.begin();px!= c->vpix.end();px++){
+		//deltaRays<<nEvent<<","<<px->row <<","<<px->col<<","<<px->tot<<endl;
+		deltaRays<<i<<","<<px->row <<","<<px->col<<","<<px->tot<<endl;
+		++i;
+	}
+	++nEvent;
+	}
 	// residuals for pre-alignment:
 
 	dutdxaHisto.Fill( dutx - x3 );
@@ -5983,7 +6001,7 @@ TProfile2D * effvsxmymHighStat = new
     DUTalignFile << "dz " << DUTz - zz[3] << endl;
 
     DUTalignFile.close();
-
+	deltaRays.close();
     cout << " to " << DUTalignFileName.str() << endl;
 	
   }
