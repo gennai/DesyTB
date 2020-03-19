@@ -4579,8 +4579,7 @@ TProfile2D * effvsxmymHighStat = new
 	      linncolffHisto.Fill( c->ncol );
 	      linnrowffHisto.Fill( c->nrow );
 	    }
-
-	    linnpxvsxmym->Fill( xmod*1E3, ymod*1E3, npx );
+				linnpxvsxmym->Fill( xmod*1E3, ymod*1E3, npx );
 	    linnpxvsxmymHighStat->Fill( xmod*1E3, ymod*1E3, npx );
 	    linncolvsxm.Fill( xmod*1E3, c->ncol );
 	    linncolvsym.Fill( ymod*1E3, c->ncol );
