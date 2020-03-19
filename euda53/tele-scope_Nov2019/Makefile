@@ -45,6 +45,11 @@ scope53m: scope53m.cc
 	$(ROOTLIBS) -L../lib -lEUDAQ
 	@install_name_tool -add_rpath @executable_path ./scope53m
 	@echo 'done: scope53m'
+scope53m_deltaRays: scope53m_deltaRays.cc
+	g++ $(CXXFLAGS) scope53m_deltaRays.cc -o scope53m_deltaRays \
+	$(ROOTLIBS) -L../lib -lEUDAQ
+	@install_name_tool -add_rpath @executable_path ./scope53m_deltaRays
+	@echo 'done: scope53m_deltaRays'
 
 ed53: ed53.cc
 	g++ $(CXXFLAGS) ed53.cc -o ed53 \
