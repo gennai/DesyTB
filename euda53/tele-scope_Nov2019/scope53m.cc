@@ -4595,8 +4595,8 @@ TProfile2D * effvsxmymHighStat = new
 	      linnrowvsym.Fill( ymod*1E3, c->nrow );
 	    if( fifty )
 	      linnrowvsym.Fill( ymod*1E3, c->nrow );
-
-	    linqxvsxmymaverage->Fill( xmod*1E3, ymod*1E3, Qx );
+		
+		linqxvsxmymaverage->Fill( xmod*1E3, ymod*1E3, Qx );
 	    linmoyalqxvsxmym->Fill(xmod*1E3, ymod*1E3, exp(-Qx/qwidmoyal));
 	    //linqxvsxmymHighStat->Fill( xmod*1E3, ymod*1E3, Qx );
 	    linmoyalqxvsxmymHighStat->Fill( xmod*1E3, ymod*1E3, exp(-Qx/qwidmoyal) );
