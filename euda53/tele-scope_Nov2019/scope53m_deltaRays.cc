@@ -348,7 +348,7 @@ int main( int argc, char* argv[] )
     return 1;
   }
  //deltaRays << "DeltaRays cols and rows\n";
-  deltaRays<<"index,row,col,tot\n";
+  deltaRays<<"index,row,col,tot,ypos,xpos\n";
   int nEvent=0;
 
   if( runsFile.bad() || ! runsFile.is_open() ) {
@@ -4400,15 +4400,7 @@ TProfile2D * effvsxmymHighStat = new
 
 	int npx = c->size;
 
-	if (npx > 10) {
-		int i =0;
-	for(vector<pixel>::iterator px = c->vpix.begin();px!= c->vpix.end();px++){
-		//deltaRays<<nEvent<<","<<px->row <<","<<px->col<<","<<px->tot<<endl;
-		deltaRays<<i<<","<<px->row <<","<<px->col<<","<<px->tot<<endl;
-		++i;
-	}
-	++nEvent;
-	}
+	
 	// residuals for pre-alignment:
 
 	dutdxaHisto.Fill( dutx - x3 );
@@ -4573,7 +4565,15 @@ TProfile2D * effvsxmymHighStat = new
 	    linqxvsy.Fill( y4, Qx );
 	    linqxvsxy->Fill( x4, y4, Qx );
 	    linqxvsr.Fill( drbeam, Qx );
-
+		if (npx > 10) {
+			int i =0;
+		for(vector<pixel>::iterator px = c->vpix.begin();px!= c->vpix.end();px++){
+		//deltaRays<<nEvent<<","<<px->row <<","<<px->col<<","<<px->tot<<endl;
+		deltaRays<<i<<","<<px->row <<","<<px->col<<","<<px->tot<<","<<int((y4+4.8)/0.05)<<","<<129+int((x4+3.5)/0.05)<<endl;
+		++i;
+		}
+		++nEvent;
+		}
 	    linnpxHisto.Fill( npx );
 	    linncolHisto.Fill( c->ncol );
 	    linnrowHisto.Fill( c->nrow );
