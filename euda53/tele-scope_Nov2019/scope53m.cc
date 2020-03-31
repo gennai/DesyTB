@@ -1078,12 +1078,14 @@ if( tag == QSIGMAMOYAL) {
 	    row = 2*iy + 0; // sensor 25
 	  else
 	    row = 2*iy + 1;
-	if(chip0 == 792125) //FBK
-            if( ix%2 )
+	if(chip0 == 792125){ //FBK
+            if( ix%2 ){
             row = 2*iy + 1; // sensor 25
-            else
+			}
+			else{
             row = 2*iy + 0;
-
+			}
+	}
 	}
 	ipx = col * 384 + row; // sensor
 	deadset.insert(ipx);
@@ -2198,7 +2200,16 @@ if( tag == QSIGMAMOYAL) {
   TH1D linqxMoyalHisto( "linqxmoyal",
 		  "LIN linked clusters;LIN cluster Moyal signal from moyal width [ToT];linked LIN clusters",
 		  1000000, 0., qxmaxMoyal );
-  TH1I linq0Histo( "linq0",
+TH1D linqMinOverqClusterAlongColumnsHisto( "linqMinOverqClusterAlongColumns",
+		   "LIN linked clusters;LIN min pxl signal / cluster signal;linked LIN clusters",
+		   50, 0., 0.5 );
+TH1D linqMinOverqClusterAlongRowsHisto( "linqMinOverqClusterAlongRows",
+		   "LIN linked clusters;LIN min pxl signal / cluster signal;linked LIN clusters",
+		   50, 0., 0.5 );
+TH1D linqMinOverqClusterHisto( "linqMinOverqCluster",
+		   "LIN linked clusters;LIN min pxl signal / cluster signal;linked LIN clusters",
+		   50, 0., 0.5 );
+TH1F linq0Histo( "linq0",
 		   "LIN linked clusters;LIN normal cluster signal [ToT];linked LIN clusters",
 		   80, 0, 80 );
   TProfile linqxvsx( "linqxvsx",
@@ -2304,6 +2315,15 @@ if( tag == QSIGMAMOYAL) {
     TProfile2D( "linmoyalqxvsxmymhighstat",
 		"LIN cluster signal vs xmod ymod;x track mod 100 [#mum];y track mod 100 [#mum];LIN <cluster signal> [ToT]",
 		100, 0, 100, 100, 0, 100, 0, qxmaxMoyal );
+	TH2F linq1vsq2Row( "linq1vsq2Row",
+			"LIN ToT for cluster size 2;q1 [ToT]; q2 [ToT]; Events",
+			16, -0.5, 15.5, 16,-0.5 , 15.5 );
+	TH2F linq1vsq2( "linq1vsq2",
+			"LIN ToT for cluster size 2;q1 [ToT]; q2 [ToT]; Events",
+			16, -0.5, 15.5, 16,-0.5 , 15.5 );
+	TH2F linq1vsq2Col( "linq1vsq2Col",
+			"LIN ToT for cluster size 2;q1 [ToT]; q2 [ToT]; Events",
+			16, -0.5, 15.5, 16,-0.5 , 15.5 );
 	TH2F * linqxvsxmymHighStat = new
     TH2F( "linqxvsxmymhighstat",
 		"LIN cluster signal vs xmod ymod;x track mod 100 [#mum];y track mod 100 [#mum];LIN <cluster signal> [ToT]",
@@ -3124,7 +3144,7 @@ TProfile2D * effvsxmymHighStat = new
 		px.row = 2*iy + 0; // different from R4S
 	      else
 		px.row = 2*iy + 1; // see ed53 for shallow angle
-	      if( chip0 == 182 || chip0 == 211 || chip0 == 512 || chip0 == 793350 || chip0 == 792125 ) { // HLL
+	      if( chip0 == 182 || chip0 == 211 || chip0 == 512 || chip0 == 793350 || chip0 == 792125 || chip0 == 543) { // HLL
 		if( ix%2 )
 		  px.row = 2*iy + 1;
 		else
@@ -3628,7 +3648,7 @@ TProfile2D * effvsxmymHighStat = new
       double crow = c->row;
 
       double dutx = ( ccol + 0.5 - nx[iDUT]/2 ) * ptchx[iDUT]; // mm
-      double duty = ( crow + 0.5 - ny[iDUT]/2 ) * ptchy[iDUT]; // mm
+      double duty = ( crow + 0.5 - ny[iDUT]/2 ) * ptchy[iDUT]; // mm 
 
       // Mod:
 
@@ -4549,6 +4569,38 @@ TProfile2D * effvsxmymHighStat = new
 
 	    linqHisto.Fill( Q );
 	    linq0Histo.Fill( Q0 );
+		//adding here two plots: tot_min_cluster/tot_cluster per clustersize ==2 along x and alongy
+		if (c->size == 2){
+		//std::cout <<"#Evento "<<iev<<endl;
+		//std::cout<<"Number of cloumns and rows "<<c->ncol<<" "<<c->nrow<<endl;
+			double minQ = 1000.;	
+			int q1 =1000;
+			int q2 = 1000;	
+			for( vector<pixel>::iterator px = c->vpix.begin(); px != c->vpix.end(); ++px ) {
+				if (px == c->vpix.begin())
+					q1 = px->tot*1.;
+				else
+					q2 = 	px->tot*1.;
+				if (px->tot < minQ)
+					minQ = px->tot;
+			}
+			if(q1 < 15 && q2 < 15) {
+			linq1vsq2.Fill(q1,q2);
+			//if (0.06 < (minQ / c->signal) && (minQ / c->signal) < 0.07){
+			//	cout <<"q1, q2 "<<q1<<" "<<q2<<endl;
+			//	cout<<" Ratio q "<<minQ/Qx<<endl;
+			//}
+				linqMinOverqClusterHisto.Fill(minQ / c->signal);
+				if (c->ncol== 2) {
+					linqMinOverqClusterAlongColumnsHisto.Fill(minQ / c->signal);
+					linq1vsq2Col.Fill(q1,q2);
+				}
+				if (c->nrow == 2){
+					linqMinOverqClusterAlongRowsHisto.Fill(minQ / c->signal);
+					linq1vsq2Row.Fill(q1,q2);
+				}
+			}
+		}
 		linqxHisto.Fill(exp( -Q / qwid )); 
 		linqxMoyalHisto.Fill(exp( -Q / qwidmoyal ));
 	    linqxvsx.Fill( x4, Qx );
@@ -5125,8 +5177,10 @@ TProfile2D * effvsxmymHighStat = new
 	  if( x4 < -3.5 ) fidx = 0;
 	}
 	if( chip0 == 543 ) { // straight Lin
-	  if( x4 >  3.2 ) fidx = 0;
-	  if( x4 < -3.5 ) fidx = 0;
+		if( y4 >  4.6 ) fidy = 0;
+		if( y4 < -4.6 ) fidy = 0;
+		if (x4 > 3.0) fidx = 0;
+		if (x4 <  -3.5) fidx =0;
 	}
 	if( chip0 == 512 && run >= 36124 && run <= 99999 ) { // Sync
 	  fidx = 1;
