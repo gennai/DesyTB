@@ -10,15 +10,15 @@ def plotHisto(runNumber):
     "linq",
     "effvsxmym",
     "effvsxy",
-    "dutpxqvsxy",
+#    "dutpxqvsxy",
     "linnpxvsxmym",
     "linqxvsxmym",
-    "linqxvsxmymaverage",
+#    "linqxvsxmymaverage",
     "linqxvsxy",
     "linq",
     "linrowmin2",
     "dutdxdy",
-    "dutdyc2",
+#    "dutdyc2",
     "linqMinOverqCluster",
     "effvst3",
     "linnrow1odd",
@@ -80,8 +80,8 @@ ROOT.gROOT.SetBatch()
 ROOT.gErrorIgnoreLevel = ROOT.kFatal
 ROOT.gStyle.SetOptStat(0)                                                                                                                                           
 
-#runlist = [37692,38613,38614,38616,38617,38619]
-runlis = [37692]
+#runlist = [37692,37724,38613,38614,38616,38617,38619]
+runlist = [37692]
 
 runlist.sort()
 
