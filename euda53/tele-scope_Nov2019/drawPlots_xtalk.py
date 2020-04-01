@@ -50,6 +50,9 @@ def plotHisto(runNumber):
     for histoname in histolist:
         myhisto = myfile.Get(histoname)
         try:
+            if (histoname =="linqMinOverqCluster"):
+                myhisto.Rebin(2)
+                myhisto.SetMaximum(35000)
             if (histoname =="linrowmin2"):
                 myhisto.GetXaxis().SetRangeUser(100.,140.)
                 myhisto.Draw()
@@ -80,8 +83,8 @@ ROOT.gROOT.SetBatch()
 ROOT.gErrorIgnoreLevel = ROOT.kFatal
 ROOT.gStyle.SetOptStat(0)                                                                                                                                           
 
-#runlist = [37692,37724,38613,38614,38616,38617,38619]
-runlist = [37692]
+runlist = [37692,37724,38613,38614,38615,38616,38617,38619]
+#runlist = [37692]
 
 runlist.sort()
 
