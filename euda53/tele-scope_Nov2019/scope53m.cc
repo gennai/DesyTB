@@ -195,7 +195,6 @@ vector <cluster> getClusq( vector <pixel> pb, int fCluCut = 1 ) // 1 = no gap
     cluster c;
     c.vpix.push_back( pb[seed] );
     gone[seed] = 1;
-
     // let it grow as much as possible:
 
     int growing;
@@ -518,7 +517,8 @@ if( tag == QSIGMAMOYAL) {
   double midy[9]; // y mid
 
   double zz[9];
-
+  double deltaSlopesx = 100000.;
+  double deltaSlopesy = 100000.;
   for( int ipl = 0; ipl < 9; ++ipl )
     nx[ipl] = 0; // missing plane flag
 
@@ -1880,6 +1880,13 @@ if( tag == QSIGMAMOYAL) {
 		"driplet slope x - triplet slope x;driplet slope x - triplet slope x;driplet-triplet pairs",
 		100, -0.005*f, 0.005*f );     
   TH1I hsixdty( "sixdty",
+		"driplet slope y - triplet slope y;driplet slope y - triplet slope y;driplet-triplet pairs",
+		100, -0.005*f, 0.005*f ); 
+
+TH1I hsixdtxLargeClusters( "sixdtxLargeClusters",
+		"driplet slope x - triplet slope x;driplet slope x - triplet slope x;driplet-triplet pairs",
+		100, -0.005*f, 0.005*f );     
+  TH1I hsixdtyLargeClusters( "sixdtyLargeClusters",
 		"driplet slope y - triplet slope y;driplet slope y - triplet slope y;driplet-triplet pairs",
 		100, -0.005*f, 0.005*f );     
 
@@ -4225,7 +4232,9 @@ TProfile2D * effvsxmymHighStat = new
 	double dy = yd - yc;
 	//double dxy = sqrt( dx*dx + dy*dy );
 	double dtx = sxB - sxA;
+	deltaSlopesx = dtx;
 	double dty = syB - syA;
+	deltaSlopesy = dty;
 	double dtxy = sqrt( dtx*dtx + dty*dty );
 
 	hsixdx.Fill( dx ); // for align fit
@@ -4570,12 +4579,16 @@ TProfile2D * effvsxmymHighStat = new
 	    linqHisto.Fill( Q );
 	    linq0Histo.Fill( Q0 );
 		//adding here two plots: tot_min_cluster/tot_cluster per clustersize ==2 along x and alongy
+		int q1 =1000;
+		int q2 = 1000;	
+		if (npx > 10){
+			hsixdtxLargeClusters.Fill(deltaSlopesx);
+			hsixdtyLargeClusters.Fill(deltaSlopesy);
+		}
 		if (c->size == 2){
 		//std::cout <<"#Evento "<<iev<<endl;
 		//std::cout<<"Number of cloumns and rows "<<c->ncol<<" "<<c->nrow<<endl;
-			double minQ = 1000.;	
-			int q1 =1000;
-			int q2 = 1000;	
+			double minQ = 1000.;				
 			for( vector<pixel>::iterator px = c->vpix.begin(); px != c->vpix.end(); ++px ) {
 				if (px == c->vpix.begin())
 					q1 = px->tot*1.;
@@ -4611,7 +4624,7 @@ TProfile2D * effvsxmymHighStat = new
 	    linnpxHisto.Fill( npx );
 	    linncolHisto.Fill( c->ncol );
 	    linnrowHisto.Fill( c->nrow );
-
+		//if(q1 < 15 && q2 < 15) {
 	    if( c->ncol == 1 ) {
 	      linnrow1Histo.Fill( c->nrow );
 	      vector<pixel>::iterator px = c->vpix.begin(); // 1st pixel
@@ -4620,7 +4633,7 @@ TProfile2D * effvsxmymHighStat = new
 	      else
 		linnrow1eveHisto.Fill( c->nrow ); // twice more, similar shape
 	    }
-
+		//}
 	    if( c->nfrm == 1 ) {
 	      linnpxfHisto.Fill( npx );
 	      linncolfHisto.Fill( c->ncol );
