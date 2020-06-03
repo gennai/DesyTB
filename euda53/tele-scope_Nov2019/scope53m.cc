@@ -502,7 +502,7 @@ if( tag == QSIGMAMOYAL) {
     m.SetFillStyle(1000);
     m.SetFillColor(1);
     m.Draw("same");
-  */ 
+  */
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // geometry:
@@ -519,6 +519,8 @@ if( tag == QSIGMAMOYAL) {
   double zz[9];
   double deltaSlopesx = 100000.;
   double deltaSlopesy = 100000.;
+  double dxTripletDriplet = 10000.;
+  double dyTripletDriplet = 10000.;
   for( int ipl = 0; ipl < 9; ++ipl )
     nx[ipl] = 0; // missing plane flag
 
@@ -684,7 +686,7 @@ if( tag == QSIGMAMOYAL) {
       if( tag.substr(0,1) == hash ) // comments start with #
 	continue;
 
-      if( tag == iteration ) 
+      if( tag == iteration )
 	tokenizer >> aligniteration;
 
       if( tag == plane )
@@ -851,7 +853,7 @@ if( tag == QSIGMAMOYAL) {
       if( tag.substr(0,1) == hash ) // comments start with #
 	continue;
 
-      if( tag == iteration ) 
+      if( tag == iteration )
 	tokenizer >> DUTaligniteration;
 
       double val;
@@ -932,6 +934,12 @@ if( tag == QSIGMAMOYAL) {
     qR = 20;
   }
 
+
+if( run >= 38445 ) { // 564i
+   qL =  5;
+    qR = 14;
+  }
+
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // DUT dead pixels:
 
@@ -971,8 +979,8 @@ if( tag == QSIGMAMOYAL) {
       tokenizer >> tag; // leading white space is suppressed
 
       if( tag.substr(0,1) == hash ) { // comments start with #
-		cout << line << endl;
-		continue;
+	cout << line << endl;
+	continue;
       }
 
       if( tag == COL ) {
@@ -998,7 +1006,7 @@ if( tag == QSIGMAMOYAL) {
 	    else
 	      iy = 2*row + 1;
 	
- 		if(chip0 == 792125) //FBK
+ 		if(chip0 == 364) //FBK
               ix = col/2; // sensor 100
             if( col%2 )
               iy = 2*row + 1; // sensor 25
@@ -1078,7 +1086,7 @@ if( tag == QSIGMAMOYAL) {
 	    row = 2*iy + 0; // sensor 25
 	  else
 	    row = 2*iy + 1;
-	if(chip0 == 792125){ //FBK
+	if(chip0 == 364){ //FBK
             if( ix%2 ){
             row = 2*iy + 1; // sensor 25
 			}
@@ -1106,6 +1114,8 @@ if( tag == QSIGMAMOYAL) {
   // MOD:
 
   string modfileA = "mod/run" + to_string(modrun) + "A.out"; // C++11
+   if( run >= 38027 )
+    modfileA = "mod/run" + to_string(modrun) + "_ch0.out"; // C++11
   cout << "try to open  " << modfileA;
   ifstream Astream( modfileA.c_str() );
   if( !Astream ) {
@@ -1116,6 +1126,8 @@ if( tag == QSIGMAMOYAL) {
     cout << " : succeed " << endl;
 
   string modfileB = "mod/run" + to_string(modrun) + "B.out";
+  if( run >= 38027 )
+    modfileB = "mod/run" + to_string(modrun) + "_ch1.out"; 
   cout << "try to open  " << modfileB;
   ifstream Bstream( modfileB.c_str() );
   if( !Bstream ) {
@@ -3060,11 +3072,11 @@ TProfile2D * effvsxmymHighStat = new
 
       // loop over frames, then pixels per frame
 
-      for( unsigned frm = 0; frm < plane.NumFrames(); ++frm ) 
+      for( unsigned frm = 0; frm < plane.NumFrames(); ++frm )
 
 	for( size_t ipix = 0; ipix < plane.HitPixels( frm ); ++ipix ) {
 
-	  if( ldbg ) 
+	  if( ldbg )
 	    cout << ": " << plane.GetX(ipix,frm)
 		 << "." << plane.GetY(ipix,frm)
 		 << "." << plane.GetPixel(ipix,frm) << " ";
@@ -3146,12 +3158,14 @@ TProfile2D * effvsxmymHighStat = new
 	    dutpxcol9Histo.Fill( ix + 0.5 );
 
 	    if( !fifty ) { // 100x25 from ROC to sensor:
+
 	      px.col = ix/2; // 100 um
-	      if( ix%2 ) 
+
+	      if( ix%2 )
 		px.row = 2*iy + 0; // different from R4S
 	      else
 		px.row = 2*iy + 1; // see ed53 for shallow angle
-	      if( chip0 == 182 || chip0 == 211 || chip0 == 512 || chip0 == 793350 || chip0 == 792125 || chip0 == 543) { // HLL
+	      if( chip0 == 364 || chip0 == 211 || chip0 == 512 || chip0 == 793350 || chip0 == 792125 || chip0 == 543) { // HLL
 		if( ix%2 )
 		  px.row = 2*iy + 1;
 		else
@@ -3935,7 +3949,7 @@ TProfile2D * effvsxmymHighStat = new
     int ntrimod = 0;
 
     double xcutMOD = 0.15;
-    double ycutMOD = 0.15;
+    double ycutMOD = 0.10;
 
     int nmtd = 0;
     int ntrilk = 0;
@@ -4229,7 +4243,9 @@ TProfile2D * effvsxmymHighStat = new
 	//double dx = xB - xA; // at DUT
 	//double dy = yB - yA;
 	double dx = xd - xc; // at DUT intersect
+	dxTripletDriplet = dx;
 	double dy = yd - yc;
+	dyTripletDriplet = dy;
 	//double dxy = sqrt( dx*dx + dy*dy );
 	double dtx = sxB - sxA;
 	deltaSlopesx = dtx;
@@ -4363,6 +4379,8 @@ TProfile2D * effvsxmymHighStat = new
       else // Diff 264..399
 	sect = 2;
 
+      if( rot90 ) // Sun 17.11.2019 9:50
+	  sect = 1; // Lin . 
       // from track x, y (at DUT) to sensor col, row:
       // for straight 50x50:
 
@@ -4430,8 +4448,8 @@ TProfile2D * effvsxmymHighStat = new
 	double dutdx = dutx - x4;
 	double dutdy = duty - y4;
 	//here below we need to fix for 25x100 in the runs where they were rotated
-	if( rot90 && chip0 != 792125 ) dutdy = -duty - y4;
-	if (rot90 && chip0 == 792125 ) dutdx = -dutx - x4;
+	if( rot90 && (chip0 != 792125 ) ) dutdy = -duty - y4;
+	
 
 	dutdxHisto.Fill( dutdx );
 	dutdyHisto.Fill( dutdy );
@@ -4582,8 +4600,11 @@ TProfile2D * effvsxmymHighStat = new
 		int q1 =1000;
 		int q2 = 1000;	
 		if (npx > 10){
-			hsixdtxLargeClusters.Fill(deltaSlopesx);
-			hsixdtyLargeClusters.Fill(deltaSlopesy);
+			//cout <<"dxTripletDriplet "<<dyTripletDriplet<<endl; 
+			if ( fabs(dxTripletDriplet)  < sixcut && fabs(dyTripletDriplet) < sixcut){
+				hsixdtxLargeClusters.Fill(deltaSlopesx);
+				hsixdtyLargeClusters.Fill(deltaSlopesy);
+			}
 		}
 		if (c->size == 2){
 		//std::cout <<"#Evento "<<iev<<endl;
@@ -5046,12 +5067,12 @@ TProfile2D * effvsxmymHighStat = new
 	  dutpxxyHisto->Fill( px, py );
 	  double pdx = px - x4; // triplet extrapol
 	  double pdy = py - y4;
-
+/*
 	   if(rot90){
                 pdx = -px - x4;
                 pdy= -py - y4;
 	   }
-
+*/
 	  double pdxy = sqrt( pdx*pdx + pdy*pdy );
 	  if( pdxy < pdmin ) pdmin = pdxy;
 
@@ -5086,15 +5107,17 @@ TProfile2D * effvsxmymHighStat = new
 	bool fidx = 1;
 	bool fidy = 1;
 
-	if( y4 >  4.7 ) fidy = 0;
-	if( y4 < -4.7 ) fidy = 0;
+	if( y4 >  3.7 ) fidy = 0;
+	if( y4 < -3.7 ) fidy = 0;
+	if( x4 >  3.2 ) fidx = 0;
+	if( x4 < -3.5 ) fidx = 0;
 
 	if( chip0 == 501 ) { // rot90 Lin
 	  if( x4 >  4.7 ) fidx = 0;
 	  if( x4 < -4.7 ) fidx = 0;
 	  fidy = 1;
 	  if( y4 >  3.5 ) fidy = 0;
-	  if( y4 < -2.1 ) fidy = 0; // packman cutout
+	  if( y4 < -2.1 ) fidy = 0; 
 	}
 	if( chip0 == 504 ) { // straight Lin
 	  if( x4 >  3.2 ) fidx = 0;
@@ -5226,7 +5249,13 @@ TProfile2D * effvsxmymHighStat = new
           if( y4 >  3.1 ) fidy = 0;
           if( y4 < -3.5 ) fidy = 0;
         }
-
+  if( rot90 ) { // rot90 Lin
+	  if( x4 >  4.7 ) fidx = 0;
+	  if( x4 < -4.7 ) fidx = 0;
+	  fidy = 1;
+	  if( y4 >  3.5 ) fidy = 0;
+	  if( y4 < -3.1 ) fidy = 0;
+	}
 	// from track x, y (at DUT) to sensor col, row:
 
 	int kcol = ( x4 / ptchx[iDUT] + 0.5*nx[iDUT] ); // straight 50x50
@@ -5288,6 +5317,8 @@ TProfile2D * effvsxmymHighStat = new
 	      double py = ( drow + 0.5 - ny[iDUT]/2 ) * ptchy[iDUT]; // mm
 	      double pdx = px - x4; // triplet extrapol
 	      double pdy = py - y4;
+	      if( rot90 ) // HPK
+		pdy = -py - y4;
 	      effvsdxdydead->Fill( pdx, pdy, nm[49] ); // map
 	    }
 
