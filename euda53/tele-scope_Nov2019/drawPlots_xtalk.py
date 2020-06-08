@@ -23,10 +23,10 @@ def plotHisto(runNumber):
     "linqMinOverqCluster",
     "effvst3",
     "linnrow1odd",
-    "sixdtx",
-    "sixdty",
-    "sixdtyLargeClusters", #slope on x for driplets
-    "sixdtxLargeClusters", #slope on y for driplets
+#    "sixdtx",
+#    "sixdty",
+#    "sixdtyLargeClusters", #slope on x for driplets
+#    "sixdtxLargeClusters", #slope on y for driplets
     "linnrow1eve"
     ]   
     
@@ -57,21 +57,25 @@ def plotHisto(runNumber):
     for histoname in histolist:
         myhisto = myfile.Get(histoname)
         try:
-            #if ("sixdt" in histoname):
+           # if ("sixdt" in histoname):
             #    print histoname,"\n"
-            #    print "mean and rms ", round(myhisto.GetMean(),6), round(myhisto.GetRMS(),6),"\n"
+             #   print "mean and rms ", round(myhisto.GetMean(),6), round(myhisto.GetRMS(),6),"\n"
             if(histoname =="linnrow1odd"):
                 oddEntries = myhisto.GetBinContent(2)
             if(histoname =="linnrow1eve"):
                 evenEntries = myhisto.GetBinContent(2)    
             if (histoname =="linqMinOverqCluster"):
-                myhisto.Rebin(2)
-                myhisto.SetMaximum(35000)
+                #myhisto.Rebin(2)
+                #myhisto.GetXaxis().SetRangeUser(0.04,0.1)
+                myhisto.Draw()
+                c1.SaveAs("Run_"+runNumber+"/"+histoname+"_Run"+runNumber+".png")   
+                print myhisto.GetMean()
+                #myhisto.SetMaximum(35000)
             if (histoname =="linrowmin2"):
                 myhisto.GetXaxis().SetRangeUser(100.,140.)
                 myhisto.Draw()
-                c1.SaveAs("Run_"+runNumber+"/"+histoname+"_Run"+runNumber+".pdf")              
-            if (histoname != "effvst3" and histoname != "linq" and histoname != "linrowmin2"):                                                  
+                c1.SaveAs("Run_"+runNumber+"/"+histoname+"_Run"+runNumber+".png")              
+            if (histoname != "effvst3" and histoname != "linq" and histoname != "linrowmin2" and histoname != "linqMinOverqCluster"):                                                  
                 myhisto.Draw("colz")
                 myhisto.GetZaxis().SetTitleOffset(1.8)                
                 if (histoname == "effvsxy"):                   
@@ -79,7 +83,7 @@ def plotHisto(runNumber):
                     pline.SetLineColor(2)
                     pline.SetLineWidth(2)
                     pline.Draw()
-                c1.SaveAs("Run_"+runNumber+"/"+histoname+"_Run"+runNumber+".pdf")  
+                c1.SaveAs("Run_"+runNumber+"/"+histoname+"_Run"+runNumber+".png")  
  
             if (histoname == "effvst3"):
                 myFit = myhisto.Fit("pol0","QS")            
@@ -87,7 +91,7 @@ def plotHisto(runNumber):
             if (histoname == "linq"):
                 #myhisto.GetXaxis().SetRangeUser(0.,20.)
                 myhisto.Draw()
-                c1.SaveAs("Run_"+runNumber+"/"+histoname+"_Run"+runNumber+".pdf")                
+                c1.SaveAs("Run_"+runNumber+"/"+histoname+"_Run"+runNumber+".png")                
         except:
             print histoname, "for run ",runNumber," is missing"
     eff = evenEntries   / oddEntries
@@ -105,28 +109,22 @@ ROOT.gErrorIgnoreLevel = ROOT.kFatal
 ROOT.gStyle.SetOptStat(0)                                                                                                                                           
 ratios = []
 ratiosError = []
-runlist = [37692,38616,38617,38615,38614,38613,38619]
-vthr = [1000,1151,1151,1570,2158,2170,3514]
+#runlist = [37692,38616,38617,38615,38614,38613,38619]
+#vthr = [1000,1151,1151,1570,2158,2170,3514]
+runlist = [38808]
+vthr = [1000]
 
 #runlist = [37692]
 #vthr = [1000]
 for runNumber in runlist:
     mydir = "Run_"+str(runNumber)
-    if os.path.exists(mydir):
-        try:
-            os.system('rm -rf %s' % mydir)
-        except OSError:
-            print ("Removal of  of the directory %s failed" % mydir)
-        try:
-            os.mkdir(mydir)
-        except OSError:
-            print ("Creation of the directory %s failed" % path)
-    else:
+    if not os.path.exists(mydir):
         try:
             os.mkdir(mydir)
         except OSError:
             print ("Creation of the directory %s failed" % path)
     ratio, ratioErr = plotHisto(runNumber)
+    print ratio
     #print runNumber, ratio, ratioErr
     ratios.append(ratio)
     ratiosError.append(ratioErr)

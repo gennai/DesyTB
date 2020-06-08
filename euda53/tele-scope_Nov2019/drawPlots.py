@@ -88,7 +88,6 @@ def plotHisto(runNumber):
     "linqx",
     "linqxmoyal",
     "effvsxmym",
-    "effvsxmym",
     "effvsxy",
     "dutpxqvsxy",
     "linnpxvsxmym",
@@ -97,6 +96,7 @@ def plotHisto(runNumber):
     "linqxvsxy",
     "linq",
     "dutdxdy",
+    "dutdx",
     "dutdyc2",
     "effvst3",
     ]   
@@ -163,12 +163,12 @@ def plotHisto(runNumber):
                 #if (histoname == "linqxvsxmym"):
                     #myhisto.SetMaximum(11.)
                     #myhisto.SetMinimum(9.)
-                if (histoname == "effvsxy"):                   
-                    pline = ROOT.TPolyLine(5,xp,yp)
-                    pline.SetLineColor(2)
-                    pline.SetLineWidth(2)
-                    pline.Draw()
-                c1.SaveAs("Run_"+runNumber+"/"+histoname+"_Run"+runNumber+".pdf")  
+                #if (histoname == "effvsxy"):                   
+                #    pline = ROOT.TPolyLine(5,xp,yp)
+                #    pline.SetLineColor(2)
+                #    pline.SetLineWidth(2)
+                #    pline.Draw()
+                c1.SaveAs("Run_"+runNumber+"/"+histoname+"_Run"+runNumber+".png")  
  
             if (histoname == "effvst3"):
                 myFit = myhisto.Fit("pol0","QS")            
@@ -247,7 +247,7 @@ def plotHisto(runNumber):
                 xlabel.DrawText(0.6, 0.5, "MPV = "+str(round(myFitL.Parameter(1),1)))
                 xlabel.DrawText(0.6, 0.4, "Sigma = "+str(round(myFitL.Parameter(2),2)))
                 """
-                c1.SaveAs("Run_"+runNumber+"/"+histoname+"_Run"+runNumber+".pdf")
+                c1.SaveAs("Run_"+runNumber+"/"+histoname+"_Run"+runNumber+".png")
                 mpvDict[runNumber] = [round(mean,1), round(meanFromMoyalHisto,1),round(myFitL.Parameter(1),1), round(meanFromMoyalHistoWithMoyalWidth,1),round(myFitLG.Parameter(0),1)]
         except:
             print histoname, "for run ",runNumber," is missing"
@@ -259,7 +259,8 @@ ROOT.gErrorIgnoreLevel = ROOT.kFatal
 ROOT.gStyle.SetOptStat(0)                                                                                                                                           
 
 #runlist = [37673,37674,37676,37677,37691,37692,37631,37722, 37723, 37724]
-runlist = [37692,37676,37674,37722,37724,37631,37683,37643]
+#runlist = [37692,37676,37674,37722,37724,37631,37683,37643]
+runlist = [38808,38814,38815,38828,38829]
 
 runlist.sort()
 
@@ -329,7 +330,7 @@ leg2.AddEntry(deltaDistribMWM,"Moyal w/ Moyal #sigma","l")
                          
 leg2.Draw()
 
-c3.SaveAs("DeltaDistrib.pdf")   
+c3.SaveAs("DeltaDistrib.png")   
 
 meanArray = array.array( 'd',[mpvDict[str(key)][0] for key in runlist])                                                                                                        
 moyalArray = array.array( 'd',[mpvDict[str(key)][1] for key in runlist])                                                                                                        
@@ -407,4 +408,4 @@ leg1.AddEntry(gr3,"Moyal w/ Moyal #sigma","p")
                          
 leg1.Draw()
 
-c2.SaveAs("Landau_MPVs.pdf") 
+c2.SaveAs("Landau_MPVs.png") 
