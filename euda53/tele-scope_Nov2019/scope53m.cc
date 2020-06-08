@@ -1005,8 +1005,8 @@ if( run >= 38445 ) { // 564i
 	      iy = 2*row + 0; // sensor 25
 	    else
 	      iy = 2*row + 1;
-	
- 		if(chip0 == 364) //FBK
+
+ 		if(chip0 == 364 || chip0== 606702) //FBK
               ix = col/2; // sensor 100
             if( col%2 )
               iy = 2*row + 1; // sensor 25
@@ -1086,7 +1086,7 @@ if( run >= 38445 ) { // 564i
 	    row = 2*iy + 0; // sensor 25
 	  else
 	    row = 2*iy + 1;
-	if(chip0 == 364){ //FBK
+	if(chip0 == 364 || chip0 == 606702){ //FBK
             if( ix%2 ){
             row = 2*iy + 1; // sensor 25
 			}
@@ -3165,7 +3165,7 @@ TProfile2D * effvsxmymHighStat = new
 		px.row = 2*iy + 0; // different from R4S
 	      else
 		px.row = 2*iy + 1; // see ed53 for shallow angle
-	      if( chip0 == 364 || chip0 == 211 || chip0 == 512 || chip0 == 793350 || chip0 == 792125 || chip0 == 543) { // HLL
+	      if( chip0 == 364 || chip0 == 606702 || chip0 == 211 || chip0 == 512 || chip0 == 793350 || chip0 == 792125 || chip0 == 543) { // HLL
 		if( ix%2 )
 		  px.row = 2*iy + 1;
 		else

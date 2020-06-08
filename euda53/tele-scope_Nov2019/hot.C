@@ -24,7 +24,7 @@ struct pixel
 };
 
 //------------------------------------------------------------------------------
-void hot( string hs, int hotcut = 999 )
+void hot( string hs, int hotcut = 999, int weakcut = 20 )
 {
   cout << hs;
 
@@ -53,6 +53,7 @@ void hot( string hs, int hotcut = 999 )
     TH1I( "frel",
 	  Form( "%s;log_{10}(hits/pixel);pixels",h2->GetZaxis()->GetTitle( ) ),
 	  100, 0, log(z9)/log10 );
+  hl->GetXaxis()->SetTitleOffset(1.4);
 
   multiset <pixel> pxset;
 
@@ -62,20 +63,38 @@ void hot( string hs, int hotcut = 999 )
 
       int n = ( h2->GetBinContent(ii,jj) + 0.1 );
 
-      if( n ) { // active
-	h1->Fill( n );
+      h1->Fill( n );
+      pixel px{ ii-1, jj-1, n };
+      pxset.insert(px);
+
+      if( n ) // active
 	hl->Fill( log( n ) / log10 );
+      else
+	hl->Fill( -1 );
 
-	pixel px{ ii-1, jj-1, n };
-	pxset.insert(px);
-      }
+    } // jj
 
-    }
+  int nweak = 0;
+  auto px = pxset.end();
+  --px;
+  for( ; px != pxset.begin(); --px ) {
+    cout << "pix"
+	 << setw(5) << px->col
+	 << setw(5) << px->row
+	 << "  " << px->cnt
+	 << endl;
+    ++nweak;
+    if( px->cnt >= weakcut ) break;
+  }
+
+  cout << "weak " << nweak << " below " << weakcut
+       << endl
+       << endl;
 
   int nhot = 0;
   for( auto px = pxset.begin(); px != pxset.end(); ++px ) {
-    cout << "pix "
-	 << setw(3) << px->col
+    cout << "pix"
+	 << setw(5) << px->col
 	 << setw(5) << px->row
 	 << "  " << px->cnt
 	 << endl;
@@ -84,8 +103,6 @@ void hot( string hs, int hotcut = 999 )
   }
 
   cout << "hot " << nhot << " above " << hotcut << endl;
-
-  cout << "active " << pxset.size() << endl;
 
   h1->Draw();
   cout << "freq" << endl;
