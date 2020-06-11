@@ -816,7 +816,6 @@ if( tag == QSIGMAMOYAL) {
   double DUTz = 0.5 * ( zz[3] + zz[4] );
 
   ostringstream DUTalignFileName; // output string stream
-
   DUTalignFileName << "alignDUT_" << run << ".dat";
 
   ifstream iDUTalignFile( DUTalignFileName.str() );
@@ -1006,7 +1005,7 @@ if( run >= 38445 ) { // 564i
 	    else
 	      iy = 2*row + 1;
 
- 		if(chip0 == 364 || chip0== 606702) //FBK
+ 		if(chip0 == 364 || chip0== 606702 || chip0 == 606701) //FBK
               ix = col/2; // sensor 100
             if( col%2 )
               iy = 2*row + 1; // sensor 25
@@ -1086,7 +1085,7 @@ if( run >= 38445 ) { // 564i
 	    row = 2*iy + 0; // sensor 25
 	  else
 	    row = 2*iy + 1;
-	if(chip0 == 364 || chip0 == 606702){ //FBK
+	if(chip0 == 364 || chip0 == 606702 || chip0 == 606701){ //FBK
             if( ix%2 ){
             row = 2*iy + 1; // sensor 25
 			}
@@ -1948,7 +1947,7 @@ TH1I hsixdtxLargeClusters( "sixdtxLargeClusters",
 
   TH1I dutdxHisto( "dutdx",
 		   "DUT - track dx;DUT cluster - track #Deltax [mm];DUT clusters",
-		   500, -0.5, 0.5 );
+		   500, -0.2, 0.2 );
   TH1I dutdyHisto( "dutdy",
 		   "DUT - track dy;DUT cluster - track #Deltay [mm];DUT clusters",
 		   500, -0.5, 0.5 );
@@ -1961,7 +1960,7 @@ TH1I hsixdtxLargeClusters( "sixdtxLargeClusters",
 
   TH1I dutdxcHisto( "dutdxc",
 		    "DUT - track dx;DUT cluster - track #Deltax [mm];DUT clusters",
-		    500, -0.5, 0.5 );
+		    500, -0.2, 0.2 );
   TH1I lindxcHisto( "lindxc",
 		    "Lin - track dx;Lin cluster - track #Deltax [mm];Lin clusters",
 		    200, -0.5, 0.5 );
@@ -2946,6 +2945,16 @@ TProfile2D * effvsxmymHighStat = new
   // event loop:
 
   cout << endl;
+  ostringstream pixelHitsFileName; // output string stream
+  pixelHitsFileName << "pixelHits_" << run << ".dat";
+  ofstream pixelHits( pixelHitsFileName.str() );
+  pixelHits << "col row tot" << endl;
+
+ostringstream pixelHitsUnpairedFileName; // output string stream
+  pixelHitsUnpairedFileName << "pixelHitsUnpaired_" << run << ".dat";
+  ofstream pixelHitsUnpaired( pixelHitsUnpairedFileName.str() );
+  pixelHitsUnpaired << "col row tot" << endl;
+
 
   FileReader * reader;
   if(      run <    100 )
@@ -3085,7 +3094,7 @@ TProfile2D * effvsxmymHighStat = new
 	  int iy = plane.GetY(ipix,frm); // row
 	  int tot = plane.GetPixel(ipix,frm); // ToT 0..15
 
-	  if( ipl == iDUT ) {
+	  if( ipl == iDUT ) {	
 	    dutpxbcHisto.Fill( frm ); // before hot pixel masking
 	    hmap[8]->Fill( ix, iy ); // before masking
 	  }
@@ -3165,7 +3174,7 @@ TProfile2D * effvsxmymHighStat = new
 		px.row = 2*iy + 0; // different from R4S
 	      else
 		px.row = 2*iy + 1; // see ed53 for shallow angle
-	      if( chip0 == 364 || chip0 == 606702 || chip0 == 211 || chip0 == 512 || chip0 == 793350 || chip0 == 792125 || chip0 == 543) { // HLL
+	      if( chip0 == 364 || chip0 == 606702 || chip0 == 606701  || chip0 == 211 || chip0 == 512 || chip0 == 793350 || chip0 == 792125 || chip0 == 543) { // HLL
 		if( ix%2 )
 		  px.row = 2*iy + 1;
 		else
@@ -4609,12 +4618,21 @@ TProfile2D * effvsxmymHighStat = new
 		if (c->size == 2){
 		//std::cout <<"#Evento "<<iev<<endl;
 		//std::cout<<"Number of cloumns and rows "<<c->ncol<<" "<<c->nrow<<endl;
-			double minQ = 1000.;				
-			for( vector<pixel>::iterator px = c->vpix.begin(); px != c->vpix.end(); ++px ) {
-				if (px == c->vpix.begin())
+			double minQ = 1000.;
+			int col1 = 0;
+			int row1 = 0;
+			int col2 = 0;
+			int row2 = 0;
+			for( vector<pixel>::iterator px = c->vpix.begin(); px != c->vpix.end(); ++px ) {				
+				if (px == c->vpix.begin()) {
 					q1 = px->tot*1.;
-				else
-					q2 = 	px->tot*1.;
+					col1 = px->col;
+					row1 = px->row;
+				}else{
+					q2 = px->tot*1.;
+					col2 = px->col;
+					row2 = px->row;
+				}
 				if (px->tot < minQ)
 					minQ = px->tot;
 			}
@@ -4628,8 +4646,16 @@ TProfile2D * effvsxmymHighStat = new
 				if (c->ncol== 2) {
 					linqMinOverqClusterAlongColumnsHisto.Fill(minQ / c->signal);
 					linq1vsq2Col.Fill(q1,q2);
+					if(row1 != row2){
+					pixelHitsUnpaired << col1 <<" "<< row1 <<" "<< q1 << endl;	
+					pixelHitsUnpaired << col2 << " "<< row2 << " "<< q2 <<  endl;	
+
+					}
 				}
-				if (c->nrow == 2){
+				if (c->nrow == 2){		
+
+					pixelHits << col1 <<" "<< row1 <<" "<< q1 << endl;	
+					pixelHits << col2 << " "<< row2 << " "<< q2 <<  endl;	
 					linqMinOverqClusterAlongRowsHisto.Fill(minQ / c->signal);
 					linq1vsq2Row.Fill(q1,q2);
 				}
@@ -6091,7 +6117,8 @@ TProfile2D * effvsxmymHighStat = new
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // done
   cout << endl << histoFile.GetName() << endl;
-
+  pixelHits.close();
+  pixelHitsUnpaired.close();
   cout << endl;
 
   return 0;

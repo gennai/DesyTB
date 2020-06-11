@@ -4,14 +4,28 @@ import math
 import os
 import numpy as np
 import matplotlib.pyplot as plt
+import argparse
+
 
 
 def plotHisto(runNumber):
     histolist = [
+    "linqx",
+    "linqxmoyal",
+    "effvsxmym",
+    "effvsxy",
+    "dutpxqvsxy",
+    "linnpxvsxmym",
+    "linqxvsxmym",
+    "linqxvsxmymaverage",
+    "linqxvsxy",
+    "dutdxdy",
+    "dutdx",
+    "dutdyc2",
+    "sixdxc",
     "linq",
     "effvsxmym",
     "effvsxy",
-#    "dutpxqvsxy",
     "linnpxvsxmym",
     "linqxvsxmym",
 #    "linqxvsxmymaverage",
@@ -21,6 +35,8 @@ def plotHisto(runNumber):
     "dutdxdy",
 #    "dutdyc2",
     "linqMinOverqCluster",
+    "linqMinOverqClusterAlongRows",
+    "linqMinOverqClusterAlongColumns",
     "effvst3",
     "linnrow1odd",
 #    "sixdtx",
@@ -109,10 +125,11 @@ ROOT.gErrorIgnoreLevel = ROOT.kFatal
 ROOT.gStyle.SetOptStat(0)                                                                                                                                           
 ratios = []
 ratiosError = []
-#runlist = [37692,38616,38617,38615,38614,38613,38619]
-#vthr = [1000,1151,1151,1570,2158,2170,3514]
-runlist = [38808]
-vthr = [1000]
+
+runlist = [38917]
+#runlist2 = [38858,38859,38860,38862,38863,38865,38866]
+#runlist.extend(runlist2)
+vthr = [1000]*len(runlist)
 
 #runlist = [37692]
 #vthr = [1000]
@@ -124,7 +141,7 @@ for runNumber in runlist:
         except OSError:
             print ("Creation of the directory %s failed" % path)
     ratio, ratioErr = plotHisto(runNumber)
-    print ratio
+    print ratio 
     #print runNumber, ratio, ratioErr
     ratios.append(ratio)
     ratiosError.append(ratioErr)
@@ -151,4 +168,4 @@ custom_lines = [Line2D([0], [0], color="b", lw=3),
 
 #ax.legend(custom_lines, ['Italy', other_country, 'France'], loc='upper left')
 ax.legend(custom_lines, ['Planar', '3D'], loc='upper right')
-plt.show()
+#plt.show()
