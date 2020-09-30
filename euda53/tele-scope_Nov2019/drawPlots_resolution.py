@@ -43,12 +43,25 @@ def tp0Fit( x, par ):
 
     return pk + par[4]
 
-
+irrad = True
+tele = "six"
+if irrad:
+    tele = "trid"
 def plotHisto(runNumber):
-    histolist = [
-    "dutdxc",
-    "sixdxc"    
-    ]   
+    if irrad:
+        histolist = [
+      
+        #for irradiated
+        "dutdyc",
+        "tridyc"    
+        ]
+    else:
+        histolist = [
+        #For june 2020 TB
+        "dutdxc",
+        "sixdxc"
+        ]    
+
     sigmaDUT = -0.5
     sigmaSIX = -0.5
     runNumber = str(runNumber) 
@@ -116,6 +129,7 @@ def plotHisto(runNumber):
 
             #print "start:", " max " , nmax, " at " , xmax, ", hwhm " , hwhm, ", bg " , bg, ", area " , nn
             if "dut" in str(histoname): 
+                #print histoname
                 fitDUTF = ROOT.TF1("fitDUTF",tp0Fit,x1,x9,5)
                 fitDUTF.SetParName( 0, "mean" )
                 fitDUTF.SetParName( 1, "sigma" )
@@ -138,8 +152,8 @@ def plotHisto(runNumber):
                 #fitDUTF.FixParameter(0,xmax)
                 myFitDUT = myhisto.Fit("fitDUTF","QSRB","",-0.2,0.2)                
                 sigmaDUT =myFitDUT.Parameter(1) 
-                #print "mean ",myFitDUT.Parameter(0), " sigma ", myFitDUT.Parameter(1), " nu ", myFitDUT.Parameter(2), " area ", myFitDUT.Parameter(3), "  bg ", myFitDUT.Parameter(4)
-            if "six" in str(histoname):
+                #print "mean ",myFitDUT.Parameter(0), " sigma ", myFitDUT.Parameter(1), " nu ", myFitDUT.Parameter(2), " area ", myFitDUT.Parameter(3), "  bg ", myFitDUT.Parameter(4)                
+            if tele in str(histoname):
                 fitF.SetParLimits(2,3.5,10.)
                 myFit = myhisto.Fit("fitF","QSRB")                            
                 sigmaSIX =myFit.Parameter(1) 
@@ -149,6 +163,8 @@ def plotHisto(runNumber):
         c1.SaveAs("Run_"+runNumber+"/"+histoname+"_Run"+runNumber+".png")
     if sigmaDUT >0. and sigmaSIX > 0.: 
         deltaRes2 = sigmaDUT*sigmaDUT - sigmaSIX*sigmaSIX/4
+        if irrad:
+            deltaRes2 = sigmaDUT*sigmaDUT - sigmaSIX*sigmaSIX
         if deltaRes2 > 0:
             deltaRes = math.sqrt(deltaRes2)
             print "Run number ",runNumber," sigma DUT ", round(sigmaDUT*1000,2), " sigma telescope ",round(sigmaSIX*1000,2), " sigma true ", round(deltaRes*1000,2)
@@ -164,6 +180,12 @@ ROOT.gErrorIgnoreLevel = ROOT.kFatal
 ROOT.gStyle.SetOptStat(0)                                                                                                                                           
 
 
+
+#CHIP 3D
+runlist =[39321]
+angle = [0]
+pngfilename = "resolution_planar_irrad.png"
+
 #w6067_BFFP_01, 25x100, FBK, Planar, Fresh
 #runlist = [38881,38882,38883,38884,38885,38886,38887,38889,38890,38891,38892]
 #angle = [0,5,7,8,9,10,11,12,14,16,18]
@@ -175,9 +197,17 @@ ROOT.gStyle.SetOptStat(0)
 #pngfilename = "resolution_Planar_NO_FP.png"
 
 #CHIP 3D
-runlist =[38903,38904,38905,38906,38907,38908,38909,38910,38911,38912,38914]
-angle = [0,4,6,8,9,10,11,12,14,16,18]
-pngfilename = "resolution_3D.png"
+#runlist =[38903,38904,38905,38906,38907,38908,38909,38910,38911,38912,38914]
+#angle = [0,4,6,8,9,10,11,12,14,16,18]
+#pngfilename = "resolution_3D.png"
+
+plotType = ""
+
+#Planar VBias
+#runlist = [38871,38872,38873,38874,38875,38876,38877,38878,38879,38880]
+#angle = [10,20,30,40,50,60,70,80,90,100]
+#pngfilename = "resolution_vs_VBias.png"
+plotType = "vbias"
 
 sigmax = []
 
@@ -198,14 +228,16 @@ ax = fig.add_subplot(111)
 ax.xaxis.grid(True, which="minor")
 ax.yaxis.grid(True, which="major")
 
-plt.xlim(min(angle)-1,max(angle)+1)
+plt.xlim(min(angle)-1,max(angle)+1)    
 #plt.ylim(min(sigmax)-0.5,max(sigmax)+0.5)
-plt.ylim(2.0,6.0)
+plt.ylim(1.0,6.0)
 plt.xticks(fontsize = 8)
 y_axis_label = "Resolution [um] "
 plt.ylabel(y_axis_label)
 plt.xlabel("Tilt angle [deg]")
-plt.xticks(np.arange(0, max(angle)+1, step=1))
+if plotType == "vbias":
+    plt.xlabel("V bias [V]")
+plt.xticks(np.arange(0, max(angle)+1, step=10))
 plt.plot(angle,sigmax,'bo',markersize=6,linewidth=0)
 ax.patch.set_facecolor("w")
 fig.patch.set_facecolor("w")

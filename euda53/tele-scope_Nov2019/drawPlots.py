@@ -95,6 +95,8 @@ def plotHisto(runNumber):
     "linqxvsxmymaverage",
     "linqxvsxy",
     "linq",
+    "linqCell1",
+    "linqCell2",
     "dutdxdy",
     "dutdx",
     "dutdyc2",
@@ -173,7 +175,7 @@ def plotHisto(runNumber):
             if (histoname == "effvst3"):
                 myFit = myhisto.Fit("pol0","QS")            
                 print "eff media per Run ", runNumber," = ",round(myFit.Parameter(0),4), " +/- ", round(myFit.ParError(0),4)
-            if (histoname == "linq"):
+            if (histoname == "linq" or histoname == "linqCell1" or histoname == "linqCell2"):
                 #myhisto.GetXaxis().SetRangeUser(0.,20.)
                 myhisto.Draw()
                 mean = myhisto.GetMean()
@@ -225,7 +227,7 @@ def plotHisto(runNumber):
                 myFitLG = myhisto.Fit(fitLG,"QSRL+","ep")
                 fitLG.SetLineColor(1)
                 fitLG.Draw("same")
-
+                print histoname
                 print "###########"
                 print "Sigma from Landau, Landau+Gaus and Moyal Fit ", runNumber, " = ", round(myFitL.Parameter(2),2), round(myFitLG.Parameter(3),2), round(myFitMoyal.Parameter(1),2)
                 print "###########"
@@ -260,7 +262,7 @@ ROOT.gStyle.SetOptStat(0)
 
 #runlist = [37673,37674,37676,37677,37691,37692,37631,37722, 37723, 37724]
 #runlist = [37692,37676,37674,37722,37724,37631,37683,37643]
-runlist = [38808,38814,38815,38828,38829]
+runlist = [39324]
 
 runlist.sort()
 

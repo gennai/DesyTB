@@ -1005,7 +1005,8 @@ if( run >= 38445 ) { // 564i
 	    else
 	      iy = 2*row + 1;
 
- 		if(chip0 == 364 || chip0== 606702 || chip0 == 606701) //FBK
+ 		if(chip0 == 10001 || chip0 == 364 || chip0== 606702 || chip0 == 606701) //FBK
+		 	  cout <<"chip0000000000000"<<chip0<<endl;
               ix = col/2; // sensor 100
             if( col%2 )
               iy = 2*row + 1; // sensor 25
@@ -1085,7 +1086,7 @@ if( run >= 38445 ) { // 564i
 	    row = 2*iy + 0; // sensor 25
 	  else
 	    row = 2*iy + 1;
-	if(chip0 == 364 || chip0 == 606702 || chip0 == 606701){ //FBK
+	if(chip0 == 10001 || chip0 == 364 || chip0 == 606702 || chip0 == 606701){ //FBK
             if( ix%2 ){
             row = 2*iy + 1; // sensor 25
 			}
@@ -1948,6 +1949,30 @@ TH1I hsixdtxLargeClusters( "sixdtxLargeClusters",
   TH1I dutdxHisto( "dutdx",
 		   "DUT - track dx;DUT cluster - track #Deltax [mm];DUT clusters",
 		   500, -0.2, 0.2 );
+TH1F dutdxPairedHisto( "dutdxPaired",
+		   "DUT - track dx;DUT cluster - track #Deltax [mm];DUT clusters",
+		   500, -0.2, 0.2 );
+TH1F dutdxUnpairedHisto( "dutdxUnpaired",
+		   "DUT - track dx;DUT cluster - track #Deltax [mm];DUT clusters",
+		   500, -0.2, 0.2 );
+TH1F dutdxPairedCls1Histo( "dutdxPairedCls1",
+		   "DUT - track dx;DUT cluster - track #Deltax [mm];DUT clusters",
+		   500, -0.2, 0.2 );
+TH1F dutdxUnpairedCls1Histo( "dutdxUnpairedCls1",
+		   "DUT - track dx;DUT cluster - track #Deltax [mm];DUT clusters",
+		   500, -0.2, 0.2 );
+TH1F dutdxPairedCls2Histo( "dutdxPairedCls2",
+		   "DUT - track dx;DUT cluster - track #Deltax [mm];DUT clusters",
+		   500, -0.2, 0.2 );
+TH1F dutdxUnpairedCls2Histo( "dutdxUnpairedCls2",
+		   "DUT - track dx;DUT cluster - track #Deltax [mm];DUT clusters",
+		   500, -0.2, 0.2 );
+TH1F dutdxPairedCls3Histo( "dutdxPairedCls3",
+		   "DUT - track dx;DUT cluster - track #Deltax [mm];DUT clusters",
+		   500, -0.2, 0.2 );
+TH1F dutdxUnpairedCls3Histo( "dutdxUnpairedCls3",
+		   "DUT - track dx;DUT cluster - track #Deltax [mm];DUT clusters",
+		   500, -0.2, 0.2 );
   TH1I dutdyHisto( "dutdy",
 		   "DUT - track dy;DUT cluster - track #Deltay [mm];DUT clusters",
 		   500, -0.5, 0.5 );
@@ -1999,6 +2024,9 @@ TH1I hsixdtxLargeClusters( "sixdtxLargeClusters",
   TProfile dutdxvsxm( "dutdxvsxm",
 		      "DUT #Deltax vs xmod;x track mod 100 [#mum];<cluster - track #Deltax> [mm]",
 		      50, 0, 100, -limx, limx );
+TProfile dutdxvsym( "dutdxvsym",
+		      "DUT #Deltax vs ymod;y track mod 100 [#mum];<cluster - track #Deltax> [mm]",
+		      100, 0, 100, -limx, limx );
   TProfile dutdxvst2( "dutdxvst2",
 		      "DUT #Deltax vs time;time [s];<DUT #Deltax> [mm/5s]",
 		      200, 0, 1000, -limx, limx );
@@ -2050,14 +2078,52 @@ TH1I hsixdtxLargeClusters( "sixdtxLargeClusters",
 		      80, -0.002, 0.002, -0.1, 0.1 );
   TProfile dutdyvsxm( "dutdyvsxm",
 		      "DUT #Deltay vs xmod;x track mod 100 [#mum];<cluster - track #Deltay> [mm]",
-		      50, 0, 100, -0.1, 0.1 );
+		      100, 0, 100, -0.1, 0.1 );
+TProfile dutdyvsxmbonding( "dutdyvsxmbonding",
+		      "DUT #Deltay vs xmod;x track mod 100 [#mum];<cluster - track #Deltay> [mm]",
+		      100, 0, 100, -0.1, 0.1 );
+TProfile dutdyvsxmnobonding( "dutdyvsxmnobonding",
+		      "DUT #Deltay vs xmod;x track mod 100 [#mum];<cluster - track #Deltay> [mm]",
+		      100, 0, 100, -0.1, 0.1 );
+TProfile dutdyvsxmcls1bonding( "dutdyvsxmcls1bonding",
+		      "DUT #Deltay vs xmod;x track mod 100 [#mum];<cluster - track #Deltay> [mm]",
+		      100, 0, 100, -0.1, 0.1 );
+TProfile dutdyvsxmcls1nobonding( "dutdyvsxmcls1nobonding",
+		      "DUT #Deltay vs xmod;x track mod 100 [#mum];<cluster - track #Deltay> [mm]",
+		      100, 0, 100, -0.1, 0.1 );
   TProfile dutdyvsym( "dutdyvsym",
 		      "DUT #Deltay vs ymod;y track mod 100 [#mum];<cluster - track #Deltay> [mm]",
 		      50, 0, 100, -0.1, 0.1 );
+TProfile dutdyvsxmLong( "dutdyvsxmlong",
+		      "DUT #Deltay vs xmod;x track mod 200 [#mum];<cluster - track #Deltay> [mm]",
+		      100, 0, 200, -0.1, 0.1 );
+  TProfile dutdyvsymLong( "dutdyvsymlong",
+		      "DUT #Deltay vs ymod;y track mod 200 [#mum];<cluster - track #Deltay> [mm]",
+		      100, 0, 200, -0.1, 0.1 );
   TProfile2D * dutdyvsxmym = new
     TProfile2D( "dutdyvsxmym",
 		"DUT #Deltay vs xmod ymod;x track mod 100 [#mum];y track mod 100 [#mum];<#Deltay> [mm]",
 		50, 0, 100, 50, 0, 100, -0.1, 0.1 );
+TProfile2D * dutdxvsxmym = new
+    TProfile2D( "dutdxvsxmym",
+		"DUT #Deltax vs xmod ymod;x track mod 100 [#mum];y track mod 100 [#mum];<#Deltax> [mm]",
+		50, 0, 100, 50, 0, 100, -0.1, 0.1 );
+  TProfile2D * dutdyvsxmymCls1Left = new
+    TProfile2D( "dutdyvsxmymcls1left",
+		"DUT #Deltay vs xmod ymod;x track mod 100 [#mum];y track mod 100 [#mum];<#Deltay> [mm]",
+		50, 0, 50, 100, 0, 100, -0.1, 0.1 );
+ TProfile2D * dutdyvsxmymCls1 = new
+    TProfile2D( "dutdyvsxmymcls1",
+		"DUT #Deltay vs xmod ymod;x track mod 100 [#mum];y track mod 100 [#mum];<#Deltay> [mm]",
+		50, 0, 100, 50, 0, 100, -0.1, 0.1 );
+ TProfile2D * dutdyvsxmymCls1Right = new
+    TProfile2D( "dutdyvsxmymcls1right",
+		"DUT #Deltay vs xmod ymod;x track mod 100 [#mum];y track mod 100 [#mum];<#Deltay> [mm]",
+		50, 50, 100, 100, 0, 100, -0.1, 0.1 );
+TProfile2D * dutdyvsxmym1Cell = new
+    TProfile2D( "dutdyvsxmym1Cell",
+		"DUT #Deltay vs xmod ymod;x track mod 100 [#mum];y track mod 50 [#mum];<#Deltay> [mm]",
+		50, 0, 100, 50, 0, 50, -0.1, 0.1 );
   TProfile dutdyvst2( "dutdyvst2",
 		      "DUT #Deltay vs time;time [s];<DUT #Deltay> [mm/5s]",
 		      200, 0, 1000, -0.1, 0.1 );
@@ -2212,6 +2278,13 @@ TH1I hsixdtxLargeClusters( "sixdtxLargeClusters",
   TH1I linqHisto( "linq",
 		  "LIN linked clusters;LIN cluster signal [ToT];linked LIN clusters",
 		  80, 0, 80 );
+  TH1I linqCell1Histo( "linqCell1",
+		  "LIN linked clusters;LIN cluster signal [ToT];linked LIN clusters",
+		  80, 0, 80 );
+ TH1I linqCell2Histo( "linqCell2",
+		  "LIN linked clusters;LIN cluster signal [ToT];linked LIN clusters",
+		  80, 0, 80 );
+  
   TH1D linqxHisto( "linqx",
 		  "LIN linked clusters;LIN cluster Moyal signal [ToT];linked LIN clusters",
 		  1000000, 0., qxmaxMoyal );
@@ -2288,6 +2361,18 @@ TH1F linq0Histo( "linq0",
     TProfile2D( "linnpxvsxmym",
 		"LIN cluster size vs xmod ymod;x track mod 100 [#mum];y track mod 100 [#mum];LIN <cluster size> [pixels]",
 		50, 0, 100, 50, 0, 100, 0, 20 );
+TProfile * linnpxvsxm = new
+    TProfile( "linnpxvsxm",
+		"LIN cluster size vs xmod;x track mod 100 [#mum];LIN <cluster size> [pixels]",
+		100, 0, 100, 0, 20 );
+TProfile * linnpxvsxmNoBonding = new
+    TProfile( "linnpxvsxmnobonding",
+		"LIN cluster size vs xmod;x track mod 100 [#mum];LIN <cluster size> [pixels]",
+		100, 0, 100, 0, 20 );
+  TProfile2D * linnpxvsxmym2x4 = new
+TProfile2D( "linnpxvsxmym2x4",
+		"LIN cluster size vs xmod ymod;x track mod 200 [#mum];y track mod 200 [#mum];LIN <cluster size> [pixels]",
+		100, 0, 200, 100, 0, 200, 0, 20 );
   TProfile2D * linnpxvsxmymHighStat = new
     TProfile2D( "linnpxvsxmymhighstat",
 		"LIN cluster size vs xmod ymod;x track mod 100 [#mum];y track mod 100 [#mum];LIN <cluster size> [pixels]",
@@ -2328,7 +2413,24 @@ TH1F linq0Histo( "linq0",
   TProfile2D * linmoyalqxvsxmym = new
     TProfile2D( "linmoyalqxvsxmym",
 		"LIN cluster moyal signal vs xmod ymod;x track mod 100 [#mum];y track mod 100 [#mum];LIN <cluster signal> [ToT]",
-		50, 0, 100, 50, 0, 100, 0, qxmaxMoyal );
+	50, 0, 100, 50, 0, 100, 0, qxmaxMoyal );
+TProfile2D * linqxvsxmym2cellsAverage = new
+    TProfile2D( "linqxvsxmym2cellsaverage",
+		"LIN cluster moyal signal vs xmod ymod;x track mod 50 [#mum];y track mod 100 [#mum];LIN <cluster signal> [ToT]",
+	100, 0, 100, 100, 0, 50, 0, qxmax );
+	
+TH2F * linqxvsxmym2cells = new
+    TH2F( "linqxvsxmym2cells",
+		"LIN cluster signal vs xmod ymod;x track mod 100 [#mum];y track mod 100 [#mum];LIN <cluster signal> [ToT]",
+		100, 0, 100, 100, 0, 100);
+TProfile2D * linmoyalqxvsxmym2cells = new
+TProfile2D( "linmoyalqxvsxmym2cells",
+		"LIN cluster moyal signal vs xmod ymod;x track mod 100 [#mum];y track mod 100 [#mum];LIN <cluster signal> [ToT]",
+	100, 0, 100, 100, 0, 100, 0, qxmaxMoyal );
+TProfile2D * linqxvsxmym2x4 = new
+    TProfile2D( "linqxvsxmym2x4",
+		"LIN cluster moyal signal vs xmod ymod;x track mod 200 [#mum];y track mod 200 [#mum];LIN <cluster signal> [ToT]",
+	100, 0, 200, 100, 0, 200, 0, qxmax );
 	TProfile2D * linmoyalqxvsxmymHighStat = new
     TProfile2D( "linmoyalqxvsxmymhighstat",
 		"LIN cluster signal vs xmod ymod;x track mod 100 [#mum];y track mod 100 [#mum];LIN <cluster signal> [ToT]",
@@ -2350,6 +2452,7 @@ TH1F linq0Histo( "linq0",
     TProfile2D( "linqxvsxmymaverage",
 		"LIN cluster signal vs xmod ymod;x track mod 100 [#mum];y track mod 100 [#mum];LIN <cluster signal> [ToT]",		
 		50, 0, 100, 50, 0, 100, 0, qxmax );
+		//100, 0, 200, 100, 0, 200, 0, qxmax );
 
   TProfile linqxvsxm( "linqxvsxm",
 		     "LIN cluster signal vs xmod;x track mod 100 [#mum];LIN <cluster signal> [ToT]",
@@ -2358,8 +2461,8 @@ TH1F linq0Histo( "linq0",
 		      "LIN cluster signal vs xmod;x track mod 50 [#mum];LIN <cluster signal> [ToT]",
 		      50, 0, 50, 0, qxmax );
   TProfile linqxvsym( "linqxvsym",
-		     "LIN cluster signal vs ymod;y track mod 100 [#mum];LIN <cluster signal> [ToT]",
-		     50, 0, 100, 0, qxmax );
+		     "LIN cluster signal vs ymod;y track mod 200 [#mum];LIN <cluster signal> [ToT]",
+		     50, 0, 200, 0, qxmax );
 
   TH1I difqHisto( "difq",
 		  "DIF linked clusters;DIF cluster signal [ToT];linked DIF clusters",
@@ -3174,7 +3277,7 @@ ostringstream pixelHitsUnpairedFileName; // output string stream
 		px.row = 2*iy + 0; // different from R4S
 	      else
 		px.row = 2*iy + 1; // see ed53 for shallow angle
-	      if( chip0 == 364 || chip0 == 606702 || chip0 == 606701  || chip0 == 211 || chip0 == 512 || chip0 == 793350 || chip0 == 792125 || chip0 == 543) { // HLL
+	      if( chip0 == 10001 || chip0 == 364 || chip0 == 606702 || chip0 == 606701  || chip0 == 211 || chip0 == 512 || chip0 == 793350 || chip0 == 792125 || chip0 == 543) { // HLL
 		if( ix%2 )
 		  px.row = 2*iy + 1;
 		else
@@ -4347,12 +4450,12 @@ ostringstream pixelHitsUnpairedFileName; // output string stream
 	  if( chip0 == 182 || chip0 == 211 || // fresh: no box
 	      chip0 == 501 || chip0 == 504 ||
 	      chip0 == 520 || chip0 == 524 ||
-	      chip0 == 531 || chip0 == 543 || chip0 == 550 || run > 37620) {
+	      chip0 == 531 || chip0 == 543 || chip0 == 550 || (run > 37620 && run < 39200 )){
 	      //chip0 == 531 || chip0 == 543 || chip0 == 550 ) {
 
 	    x4 = x8;
 	    y4 = y8;
-
+	
 	    xmod = fmod( 9.000 + x4, 0.100 ); // [0,0.100] mm
 	    ymod = fmod( 9.000 + y4, 0.100 ); // [0,0.100] mm
 
@@ -4490,7 +4593,48 @@ ostringstream pixelHitsUnpairedFileName; // output string stream
 	    dutdxvstx0.Fill( sxA, dutdx );
 	  else
 	    dutdxvstx1.Fill( sxA, dutdx );
+	if(ymod*1E3 <85 && ymod*1E3 >15){
+	  	if ( fabs(xmod*1E3-50) < 5 || xmod*1E3 < 5 || xmod*1E3 > 95){
+	  		dutdxUnpairedHisto.Fill(dutdx);
+	//	if (npx ==2 && fabs(dutdx) < 0.007 ){
+		//	vector<pixel>::iterator px = c->vpix.begin();
+		//	cout <<" DX "<<dutdx<<endl; 
+		// 	for (;px != c->vpix.end();px++){
+	//				cout <<" *** pxl row and column and tot "<<px->row<<" "<<px->col<<" "<<px->tot<<endl;
+	//		 	}
+	//		}
+			if (npx ==1 )
+				dutdxUnpairedCls1Histo.Fill(dutdx);
+			if (npx ==2 )
+				dutdxUnpairedCls2Histo.Fill(dutdx);
+			if (npx ==3 )
+				dutdxUnpairedCls3Histo.Fill(dutdx);
+		  }
+	  	if ( fabs(xmod*1E3-25) < 5 || fabs(xmod*1E3-75) < 5){
+			//   	if (npx == 2){
+			// 	vector<pixel>::iterator px = c->vpix.begin();
+			// 	if ((px->row == 0 || px->row == 2)){
+			// 		cout <<" cluster row and column "<<c->row<<" "<<c->col<<endl;
+
+			// 	for (;px != c->vpix.end();px++){
+			//  		cout <<" *** pxl row and column "<<px->row<<" "<<px->col<<endl;
+			// 	}
+			// 	}
+			// }
+	  		dutdxPairedHisto.Fill(dutdx);
+			//	if (ymod*1E3 > 50) {
+
+			if (npx ==1 )
+				dutdxPairedCls1Histo.Fill(dutdx);
+			if (npx ==2 )
+				dutdxPairedCls2Histo.Fill(dutdx);
+			if (npx ==3 )
+				dutdxPairedCls3Histo.Fill(dutdx);
+			//	}
+		  }
+		}
 	  dutdxvsxm.Fill( xmod*1E3, dutdx );
+	  dutdxvsym.Fill(ymod*1E3, dutdx);
 	  dutdxvst2.Fill( evsec, dutdx );
 	  dutdxvst5.Fill( evsec, dutdx );
 
@@ -4513,10 +4657,36 @@ ostringstream pixelHitsUnpairedFileName; // output string stream
 
 	  dutdyvsx.Fill( x4, dutdy ); // for rot
 	  dutdyvsy.Fill( y4, dutdy ); // for tilt
-	  dutdyvsty.Fill( syA, dutdy );
+	  dutdyvsty.Fill( syA, dutdy );	  
 	  dutdyvsxm.Fill( xmod*1E3, dutdy );
+	  linnpxvsxm->Fill(xmod*1E3, npx);
+	
+	 if  ((15 < ymod*1E3 && ymod*1E3 < 35 ) ){
+	  dutdyvsxmbonding.Fill( xmod*1E3, dutdy );
+		 if (npx == 1) dutdyvsxmcls1bonding.Fill( xmod*1E3, dutdy );
+	 }
+	 if ((40 < ymod*1E3 && ymod*1E3 < 60 )){
+		 dutdyvsxmnobonding.Fill( xmod*1E3, dutdy );
+	  if (npx == 1) dutdyvsxmcls1nobonding.Fill( xmod*1E3, dutdy );
+	
+
+	}
+	 // }
+	if ( (45 < ymod5*1E3 && ymod5*1E3 < 55 ) || (0 < ymod5*1E3  && ymod5*1E3 <5 ) || (95 < ymod5*1E3  && ymod5*1E3 <100 ) ){
+	  linnpxvsxmNoBonding->Fill(xmod*1E3, npx);
+	}
 	  dutdyvsym.Fill( ymod*1E3, dutdy );
+	  dutdyvsxmLong.Fill( xmod2*1E3, dutdy );
+	  dutdyvsymLong.Fill( ymod2*1E3, dutdy );
 	  dutdyvsxmym->Fill( xmod*1E3, ymod*1E3, dutdy );
+	  dutdxvsxmym->Fill( xmod*1E3, ymod*1E3, dutdx );
+	  if (npx ==1){
+		 dutdyvsxmymCls1->Fill(xmod*1E3, ymod*1E3, dutdy); 
+
+	  	dutdyvsxmymCls1Left->Fill(xmod*1E3, ymod*1E3, dutdy);
+		dutdyvsxmymCls1Right->Fill(xmod*1E3, ymod*1E3, dutdy);		  
+	  }
+	  dutdyvsxmym1Cell->Fill(xmod*1E3, ymod5*1E3, dutdy );
 	  dutdyvst2.Fill( evsec, dutdy );
 	  dutdyvst5.Fill( evsec, dutdy );
 
@@ -4604,6 +4774,11 @@ ostringstream pixelHitsUnpairedFileName; // output string stream
 	  if( sect == 1 ) {
 
 	    linqHisto.Fill( Q );
+		if (ymod*1E3 < 50)
+			linqCell1Histo.Fill(Q);
+		if (ymod*1E3 > 50)
+			linqCell2Histo.Fill(Q);			
+  
 	    linq0Histo.Fill( Q0 );
 		//adding here two plots: tot_min_cluster/tot_cluster per clustersize ==2 along x and alongy
 		int q1 =1000;
@@ -4643,7 +4818,7 @@ ostringstream pixelHitsUnpairedFileName; // output string stream
 			//	cout<<" Ratio q "<<minQ/Qx<<endl;
 			//}
 				linqMinOverqClusterHisto.Fill(minQ / c->signal);
-				if (c->ncol== 2) {
+				if (c->ncol== 1) {
 					linqMinOverqClusterAlongColumnsHisto.Fill(minQ / c->signal);
 					linq1vsq2Col.Fill(q1,q2);
 					if(row1 != row2){
@@ -4652,7 +4827,7 @@ ostringstream pixelHitsUnpairedFileName; // output string stream
 
 					}
 				}
-				if (c->nrow == 2){		
+				if (c->ncol == 1){		
 
 					pixelHits << col1 <<" "<< row1 <<" "<< q1 << endl;	
 					pixelHits << col2 << " "<< row2 << " "<< q2 <<  endl;	
@@ -4691,7 +4866,8 @@ ostringstream pixelHitsUnpairedFileName; // output string stream
 	      linncolffHisto.Fill( c->ncol );
 	      linnrowffHisto.Fill( c->nrow );
 	    }
-				linnpxvsxmym->Fill( xmod*1E3, ymod*1E3, npx );
+		linnpxvsxmym->Fill( xmod*1E3, ymod*1E3, npx );
+		linnpxvsxmym2x4->Fill( xmod2*1E3, ymod2*1E3, npx );
 	    linnpxvsxmymHighStat->Fill( xmod*1E3, ymod*1E3, npx );
 	    linncolvsxm.Fill( xmod*1E3, c->ncol );
 	    linncolvsym.Fill( ymod*1E3, c->ncol );
@@ -4708,12 +4884,16 @@ ostringstream pixelHitsUnpairedFileName; // output string stream
 	      linnrowvsym.Fill( ymod*1E3, c->nrow );
 		
 		linqxvsxmymaverage->Fill( xmod*1E3, ymod*1E3, Qx );
+		linqxvsxmym2cellsAverage->Fill( xmod*1E3, ymod5*1E3, Qx );
+		linmoyalqxvsxmym2cells->Fill( xmod*1E3, ymod*1E3, exp(-Qx/qwidmoyal) );
 	    linmoyalqxvsxmym->Fill(xmod*1E3, ymod*1E3, exp(-Qx/qwidmoyal));
+		linqxvsxmymaverage->Fill( xmod*1E3, ymod*1E3, Qx );
+		linqxvsxmym2x4->Fill(xmod2*1E3, ymod2*1E3, Qx);
 	    //linqxvsxmymHighStat->Fill( xmod*1E3, ymod*1E3, Qx );
 	    linmoyalqxvsxmymHighStat->Fill( xmod*1E3, ymod*1E3, exp(-Qx/qwidmoyal) );
 	    linqxvsxm.Fill( xmod*1E3, Qx );
 	    linqxvsxm5.Fill( xmod5*1E3, Qx );
-	    linqxvsym.Fill( ymod*1E3, Qx );
+	    linqxvsym.Fill( ymod2*1E3, Qx );
 
 	  } // Lin sect
 
@@ -5417,7 +5597,16 @@ ostringstream pixelHitsUnpairedFileName; // output string stream
 		linqxvsxmym->SetBinContent(i,j,qmpv);	
 
 	  }
+  }
+   //computing the MPV from the moyal distribution 
+  nxbins = linmoyalqxvsxmym2cells->GetNbinsX();
+  nybins = linmoyalqxvsxmym2cells->GetNbinsY();
+  for (int i=1;i< nxbins+1;i++){
+	  for (int j=1;j< nybins+1;j++){
+		float qmpv = -qwidmoyal*log(linmoyalqxvsxmym2cells->GetBinContent(i,j));
+		linqxvsxmym2cells->SetBinContent(i,j,qmpv);	
 
+	  }
   }
   nxbins = linmoyalqxvsxmymHighStat->GetNbinsX();
   nybins = linmoyalqxvsxmymHighStat->GetNbinsY();
