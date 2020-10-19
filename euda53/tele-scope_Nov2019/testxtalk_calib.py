@@ -11,7 +11,7 @@ q1rawunpaired = []
 q2 = []
 q2raw = []
 q2rawunpaired = []
-print pixelhits.shape
+#print pixelhits.shape
 for i in range(pixelhits.shape[0]):    
     if i%2 ==0 :
         q1.append(pippo[pixelhits[i][0],pixelhits[i][1],pixelhits[i][2]])
@@ -42,8 +42,9 @@ bins = np.linspace(0, 0.5, 25)
 fig, ax = plt.subplots(1,1)
 plt.hist(ratioqraw,alpha=0.5,bins=20, label="paired")
 plt.hist(ratioqrawunpaired,alpha=0.5,bins=20, label="unpaired")
+#plt.hist(ratioq,alpha=1.,bins=50, label="paired calibrated")
 plt.legend(loc='upper right')
 ax.patch.set_facecolor("w")
 fig.patch.set_facecolor("w")
 plt.savefig("xtalk_"+runN+".png")
-plt.show()
+#plt.show()

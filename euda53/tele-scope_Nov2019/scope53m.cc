@@ -2027,6 +2027,13 @@ TH1F dutdxUnpairedCls3Histo( "dutdxUnpairedCls3",
 TProfile dutdxvsym( "dutdxvsym",
 		      "DUT #Deltax vs ymod;y track mod 100 [#mum];<cluster - track #Deltax> [mm]",
 		      100, 0, 100, -limx, limx );
+
+TProfile dutdxvsymbonding( "dutdxvsymbonding",
+		      "DUT #Deltax vs ymod;y track mod 100 [#mum];<cluster - track #Deltax> [mm]",
+		      100, 0, 100, -limx, limx );
+TProfile dutdxvsymnobonding( "dutdxvsymnobonding",
+		      "DUT #Deltax vs ymod;y track mod 100 [#mum];<cluster - track #Deltax> [mm]",
+		      100, 0, 100, -limx, limx );
   TProfile dutdxvst2( "dutdxvst2",
 		      "DUT #Deltax vs time;time [s];<DUT #Deltax> [mm/5s]",
 		      200, 0, 1000, -limx, limx );
@@ -2104,6 +2111,51 @@ TProfile dutdyvsxmLong( "dutdyvsxmlong",
     TProfile2D( "dutdyvsxmym",
 		"DUT #Deltay vs xmod ymod;x track mod 100 [#mum];y track mod 100 [#mum];<#Deltay> [mm]",
 		50, 0, 100, 50, 0, 100, -0.1, 0.1 );
+TH1F * dutdy_xm_left_ym_all = new TH1F("dutdy_xm_left_ym_all", 
+	"DUT #Deltay in all the area;DUT cluster - track #Deltay [mm];Entries",
+	100,-0.1,0.1);
+TH1F * dutdy_xm_left_ym_pixel = new TH1F("dutdy_xm_left_ym_pixel", 
+	"DUT #Deltay inside the pixel;DUT cluster - track #Deltay [mm];Entries",
+	100,-0.1,0.1);
+TH1F * dutdy_xm_left_ym_bonding = new TH1F("dutdy_xm_left_ym_bonding", 
+	"DUT #Deltay around the bonding pad;DUT cluster - track #Deltay [mm];Entries",
+	100,-0.1,0.1);
+TH1F * dutdy_xm_left_ym_all_cls1 = new TH1F("dutdy_xm_left_ym_all_cls1", 
+	"DUT #Deltay in all the area but cluster size = 1;DUT cluster - track #Deltay [mm];Entries",
+	100,-0.1,0.1);
+TH1F * dutdy_xm_left_ym_pixel_cls1 = new TH1F("dutdy_xm_left_ym_pixel_cls1", 
+	"DUT #Deltay inside the pixel but cluster size = 1;DUT cluster - track #Deltay [mm];Entries",
+	100,-0.1,0.1);
+TH1F * dutdy_xm_left_ym_bonding_cls1 = new TH1F("dutdy_xm_left_ym_bonding_cls1", 
+	"DUT #Deltay around the bonding pad but cluster size = 1;DUT cluster - track #Deltay [mm];Entries",
+	100,-0.1,0.1);
+TH1F * dutdy_xm_right_ym_all = new TH1F("dutdy_xm_right_ym_all", 
+	"DUT #Deltay around the bonding pad;DUT cluster - track #Deltay [mm];Entries",
+	100,-0.1,0.1);
+TH1F * dutdy_xm_right_ym_pixel = new TH1F("dutdy_xm_right_ym_pixel", 
+	"DUT #Deltay around the bonding pad;DUT cluster - track #Deltay [mm];Entries",
+	100,-0.1,0.1);
+TH1F * dutdy_xm_right_ym_bonding = new TH1F("dutdy_xm_right_ym_bonding", 
+	"DUT #Deltay around the bonding pad;DUT cluster - track #Deltay [mm];Entries",
+	100,-0.1,0.1);
+TH1F * dutdy_xm_right_ym_all_cls1 = new TH1F("dutdy_xm_right_ym_all_cls1", 
+	"DUT #Deltay around the bonding pad;DUT cluster - track #Deltay [mm];Entries",
+	100,-0.1,0.1);
+TH1F * dutdy_xm_right_ym_pixel_cls1 = new TH1F("dutdy_xm_right_ym_pixel_cls1", 
+	"DUT #Deltay around the bonding pad;DUT cluster - track #Deltay [mm];Entries",
+	100,-0.1,0.1);
+TH1F * dutdy_xm_right_ym_bonding_cls1 = new TH1F("dutdy_xm_right_ym_bonding_cls1", 
+	"DUT #Deltay around the bonding pad;DUT cluster - track #Deltay [mm];Entries",
+	100,-0.1,0.1);
+
+  TProfile2D * dutdyvsxmymMod50 = new
+    TProfile2D( "dutdyvsxmymmod50",
+		"DUT #Deltay vs xmod ymod;x track mod 100 [#mum];y track mod 50 [#mum];<#Deltay> [mm]",
+		50, 0, 100, 25, 0, 50, -0.1, 0.1 );
+TProfile2D * dutdyvsxmymMod50cls1 = new
+    TProfile2D( "dutdyvsxmymmod50cls1",
+		"DUT #Deltay vs xmod ymod;x track mod 100 [#mum];y track mod 50 [#mum];<#Deltay> [mm]",
+		50, 0, 100, 25, 0, 50, -0.1, 0.1 );
 TProfile2D * dutdxvsxmym = new
     TProfile2D( "dutdxvsxmym",
 		"DUT #Deltax vs xmod ymod;x track mod 100 [#mum];y track mod 100 [#mum];<#Deltax> [mm]",
@@ -2357,10 +2409,18 @@ TH1F linq0Histo( "linq0",
 		       "LIN linked 2-BC cluster rows;LIN cluster size [rows];linked 2-BC LIN clusters",
 		       20, 0.5, 20.5 );
 
-  TProfile2D * linnpxvsxmym = new
+ TProfile2D * linnpxvsxmym = new
     TProfile2D( "linnpxvsxmym",
 		"LIN cluster size vs xmod ymod;x track mod 100 [#mum];y track mod 100 [#mum];LIN <cluster size> [pixels]",
-		50, 0, 100, 50, 0, 100, 0, 20 );
+		50, 0, 100, 50, 0, 100, 0, 20 ); 
+ TProfile2D * cls1vsxmym = new
+    TProfile2D( "cls1vsxmym",
+		"Clustersize 1 efficiency vs xmod ymod;x track mod 100 [#mum];y track mod 100 [#mum];LIN <cluster size> [pixels]",
+		25, 0, 100, 50, 0, 50, -1, 2 );
+TProfile * cls1vsxm = new
+    TProfile( "cls1vsxm",
+		"Clustersize 1 efficiency vs xmod;x track mod 100 [#mum]; <cluster size eff>",
+		100, 0, 100, -1, 2 );
 TProfile * linnpxvsxm = new
     TProfile( "linnpxvsxm",
 		"LIN cluster size vs xmod;x track mod 100 [#mum];LIN <cluster size> [pixels]",
@@ -2774,6 +2834,24 @@ TProfile2D * linqxvsxmym2x4 = new
   TProfile linqseedvsym( "linqseedvsym",
 		      "LIN seed row signal vs ymod;y track mod 50 [#mum];1-col LIN <seed row signal> [ToT]",
 		      50, 0, 50, -1, 99 );
+  TProfile linqseedvsxmdown( "linqseedvsxmdown",
+		      "LIN seed row signal vs xmod;x track mod 100 [#mum];1-col LIN <seed row signal> [ToT]",
+		      25, 0, 100, -1, 99 );
+  TProfile linqseedvsxmup( "linqseedvsxmup",
+		      "LIN seed row signal vs xmod;x track mod 100 [#mum];1-col LIN <seed row signal> [ToT]",
+		      25, 0, 100, -1, 99 );
+TProfile linqseedvsymdown( "linqseedvsymdown",
+		      "LIN seed row signal vs ymod;y track mod 100 [#mum];1-col LIN <seed row signal> [ToT]",
+		      25, 0, 100, -1, 99 );
+  TProfile linqseedvsymup( "linqseedvsymup",
+		      "LIN seed row signal vs ymod;y track mod 100 [#mum];1-col LIN <seed row signal> [ToT]",
+		      25, 0, 100, -1, 99 );
+TProfile linqseedvsxmupfromdown( "linqseedvsxmupfromdown",
+		      "LIN seed row signal vs xmod;x track mod 100 [#mum];1-col LIN <seed row signal> [ToT]",
+		      25, 0, 100, -1, 99 );
+TProfile linqseedvsymupfromdown( "linqseedvsymupfromdown",
+		      "LIN seed row signal vs ymod;y track mod 100 [#mum];1-col LIN <seed row signal> [ToT]",
+		      25, 0, 100, -1, 99 );
   TProfile linqpairvsym( "linqpairvsym",
 		      "LIN pair row signal vs ymod;y track mod 50 [#mum];1-col LIN <pair row signal> [ToT]",
 		      50, 0, 50, -1, 99 );
@@ -4662,23 +4740,63 @@ ostringstream pixelHitsUnpairedFileName; // output string stream
 	  linnpxvsxm->Fill(xmod*1E3, npx);
 	
 	 if  ((15 < ymod*1E3 && ymod*1E3 < 35 ) ){
+	//	 if  ((18 < ymod5*1E3 && ymod5*1E3 < 32 ) ){
 	  dutdyvsxmbonding.Fill( xmod*1E3, dutdy );
 		 if (npx == 1) dutdyvsxmcls1bonding.Fill( xmod*1E3, dutdy );
 	 }
-	 if ((40 < ymod*1E3 && ymod*1E3 < 60 )){
+	 if (( 40 < ymod*1E3 && ymod*1E3 < 60 )){
+	//	 if ((45 < ymod*1E3 && ymod*1E3 < 50 )){
 		 dutdyvsxmnobonding.Fill( xmod*1E3, dutdy );
 	  if (npx == 1) dutdyvsxmcls1nobonding.Fill( xmod*1E3, dutdy );
 	
 
 	}
 	 // }
-	if ( (45 < ymod5*1E3 && ymod5*1E3 < 55 ) || (0 < ymod5*1E3  && ymod5*1E3 <5 ) || (95 < ymod5*1E3  && ymod5*1E3 <100 ) ){
+	if ( (43 < ymod5*1E3 && ymod5*1E3 < 57 ) ){
 	  linnpxvsxmNoBonding->Fill(xmod*1E3, npx);
 	}
 	  dutdyvsym.Fill( ymod*1E3, dutdy );
 	  dutdyvsxmLong.Fill( xmod2*1E3, dutdy );
 	  dutdyvsymLong.Fill( ymod2*1E3, dutdy );
 	  dutdyvsxmym->Fill( xmod*1E3, ymod*1E3, dutdy );
+	  if (43< xmod*1E3 && xmod5*1E3 < 57 ){
+		 dutdxvsymnobonding.Fill( ymod*1E3, dutdx );
+	}
+	if  ((18 < xmod*1E3 && xmod*1E3 < 32 ) ){
+	  dutdxvsymbonding.Fill( ymod*1E3, dutdx );
+	 }
+	 // }
+	//if (ymod*1E3<50){
+		dutdyvsxmymMod50->Fill(xmod*1E3, ymod5*1E3, dutdy);
+		
+		if (npx == 1){
+			dutdyvsxmymMod50cls1->Fill(xmod*1E3, ymod5*1E3, dutdy);
+		}
+	//}
+	if (xmod*1E3 < 35 && xmod*1E3 > 25){
+		dutdy_xm_left_ym_all->Fill(dutdy);
+		if (npx == 1){dutdy_xm_left_ym_all_cls1->Fill(dutdy);}
+		if (ymod5*1E3>8 && ymod5*1E3 < 18){
+			dutdy_xm_left_ym_pixel->Fill(dutdy);
+			if (npx == 1){dutdy_xm_left_ym_pixel_cls1->Fill(dutdy);}
+		}
+		if  (ymod5*1E3>19 && ymod5*1E3 < 24){
+			dutdy_xm_left_ym_bonding->Fill(dutdy);
+			if (npx == 1){dutdy_xm_left_ym_bonding_cls1->Fill(dutdy);}
+		}
+	}
+	if (xmod*1E3 > 75 && xmod*1E3 < 85){
+		dutdy_xm_right_ym_all->Fill(dutdy);
+		if (npx == 1){dutdy_xm_right_ym_all_cls1->Fill(dutdy);}
+		if (ymod5*1E3>8 && ymod5*1E3 < 18){
+			dutdy_xm_right_ym_pixel->Fill(dutdy);
+			if (npx == 1){dutdy_xm_right_ym_pixel_cls1->Fill(dutdy);}
+		}
+		if  (ymod5*1E3>25 && ymod5*1E3 < 30){
+			dutdy_xm_right_ym_bonding->Fill(dutdy);
+			if (npx == 1){dutdy_xm_right_ym_bonding_cls1->Fill(dutdy);}
+		}
+	}
 	  dutdxvsxmym->Fill( xmod*1E3, ymod*1E3, dutdx );
 	  if (npx ==1){
 		 dutdyvsxmymCls1->Fill(xmod*1E3, ymod*1E3, dutdy); 
@@ -4867,6 +4985,16 @@ ostringstream pixelHitsUnpairedFileName; // output string stream
 	      linnrowffHisto.Fill( c->nrow );
 	    }
 		linnpxvsxmym->Fill( xmod*1E3, ymod*1E3, npx );
+		if (ymod*1E3 < 50 ){
+		if (npx == 1){
+			cls1vsxmym->Fill( xmod*1E3, ymod5*1E3, 1. );
+			
+				cls1vsxm->Fill(xmod*1E3, 1.);
+			}else{
+			cls1vsxmym->Fill( xmod*1E3, ymod5*1E3, 0. );
+				cls1vsxm->Fill(xmod*1E3, 0.);
+		}
+	  }
 		linnpxvsxmym2x4->Fill( xmod2*1E3, ymod2*1E3, npx );
 	    linnpxvsxmymHighStat->Fill( xmod*1E3, ymod*1E3, npx );
 	    linncolvsxm.Fill( xmod*1E3, c->ncol );
@@ -5201,6 +5329,24 @@ ostringstream pixelHitsUnpairedFileName; // output string stream
 	      linqpairHisto.Fill( rowq.at(lrow) );
 
 	      linqseedvsym.Fill( ymod5*1E3, rowq.at(krow) );
+		  if (7 < ymod5*1E3 &&  ymod5*1E3 < 17 ){
+		  linqseedvsxmdown.Fill( xmod*1E3, rowq.at(krow) );
+		  if (krow <382) {
+		  	linqseedvsxmupfromdown.Fill(xmod*1E3, rowq.at(krow+1));
+		  }
+		  }
+		  if (33 < ymod5*1E3 &&  ymod5*1E3 < 43 ){
+		  linqseedvsxmup.Fill( xmod*1E3, rowq.at(krow) );
+		  }
+		  if (7 < xmod5*1E3 &&  xmod5*1E3 < 17 ){
+		  linqseedvsymdown.Fill( ymod*1E3, rowq.at(krow) );
+		  if (krow <382) {
+		  	linqseedvsymupfromdown.Fill(ymod*1E3, rowq.at(krow+1));
+		  }
+		  }
+		  if (33 < xmod5*1E3 &&  xmod5*1E3 < 43 ){
+		  linqseedvsymup.Fill( ymod*1E3, rowq.at(krow) );
+		  }
 	      linqpairvsym.Fill( ymod5*1E3, rowq.at(lrow) );
 	      linqymHisto.Fill( ymod5*1E3, -rowq.at(lrow) );
 	      linqymHisto.Fill( ymod5*1E3,  rowq.at(krow) );
