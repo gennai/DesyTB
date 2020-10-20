@@ -2111,6 +2111,10 @@ TProfile dutdyvsxmLong( "dutdyvsxmlong",
     TProfile2D( "dutdyvsxmym",
 		"DUT #Deltay vs xmod ymod;x track mod 100 [#mum];y track mod 100 [#mum];<#Deltay> [mm]",
 		50, 0, 100, 50, 0, 100, -0.1, 0.1 );
+ TH2F * dutdyVsToT_xm_right_ym_bonding_cls1 = new
+    TH2F( "dutdyVsToT_xm_right_ym_bonding_cls1",
+		"ToT vs DUT #Deltay around the bonding pad;DUT cluster - track #Deltay [mm];LIN <cluster signal> [ToT]",
+		100, -0.1,0.1,20, 0.5, 20.5);
 TH1F * dutdy_xm_left_ym_all = new TH1F("dutdy_xm_left_ym_all", 
 	"DUT #Deltay in all the area;DUT cluster - track #Deltay [mm];Entries",
 	100,-0.1,0.1);
@@ -4780,7 +4784,8 @@ ostringstream pixelHitsUnpairedFileName; // output string stream
 			dutdy_xm_left_ym_pixel->Fill(dutdy);
 			if (npx == 1){dutdy_xm_left_ym_pixel_cls1->Fill(dutdy);}
 		}
-		if  (ymod5*1E3>19 && ymod5*1E3 < 24){
+		//if  (ymod5*1E3>19 && ymod5*1E3 < 24){
+			if  (ymod5*1E3>25 && ymod5*1E3 < 30){
 			dutdy_xm_left_ym_bonding->Fill(dutdy);
 			if (npx == 1){dutdy_xm_left_ym_bonding_cls1->Fill(dutdy);}
 		}
@@ -4792,9 +4797,12 @@ ostringstream pixelHitsUnpairedFileName; // output string stream
 			dutdy_xm_right_ym_pixel->Fill(dutdy);
 			if (npx == 1){dutdy_xm_right_ym_pixel_cls1->Fill(dutdy);}
 		}
-		if  (ymod5*1E3>25 && ymod5*1E3 < 30){
+		//if  (ymod5*1E3>25 && ymod5*1E3 < 30){
+			if  (ymod5*1E3>19 && ymod5*1E3 < 24){
 			dutdy_xm_right_ym_bonding->Fill(dutdy);
-			if (npx == 1){dutdy_xm_right_ym_bonding_cls1->Fill(dutdy);}
+			if (npx == 1){
+				dutdyVsToT_xm_right_ym_bonding_cls1->Fill(dutdy,Q);
+				dutdy_xm_right_ym_bonding_cls1->Fill(dutdy);}
 		}
 	}
 	  dutdxvsxmym->Fill( xmod*1E3, ymod*1E3, dutdx );
