@@ -203,9 +203,11 @@ ratiosError = []
 #runlist = [38868, 39311,39313,39324,39330, 39334, 39335]
 #runlist.extend(runlist2)
 #vthr = [1000]*len(runlist)
-runlist = [39313,39330,39324,39335,39334,39333,39321]
-vthr = [1150,1050,1050,1400,1150,950,1315]
-vbias = [200,800,500,500,500,500,500]
+#runlist = [40418,40419,40420,40421,40423,40425,40457]
+#vbias = [250,350,400,450,500,600,700]
+runlist = [35472,35475,35476,35478,35479,35481,35484]
+vbias = [300]*len(runlist)
+vthr = vbias
 #vthr = [10,20,30,40,50,60,70,80,90,100]
 
 #runlist = [37692]
@@ -233,9 +235,10 @@ plt.ylim(0.4,1)
 plt.xticks(fontsize = 8)
 y_axis_label = " #Even / (#Even + #Odd) "
 plt.ylabel(y_axis_label)
-plt.xlabel("Threshold [electrons]")
+#plt.xlabel("Threshold [electrons]")
+plt.xlabel("Bias [V]")
 plt.plot(vthr[0:],ratios[0:],'bo',markersize=6,linewidth=0)
-plt.plot(vthr[1],ratios[1],'ro',markersize=6,linewidth=0)
+#plt.plot(vthr[1],ratios[1],'ro',markersize=6,linewidth=0)
 plt.plot(vthr[0],ratios[0],'go',markersize=6,linewidth=0)
 ax.patch.set_facecolor("w")
 fig.patch.set_facecolor("w")
@@ -246,5 +249,5 @@ custom_lines = [Line2D([0], [0], color="b", lw=3),
 
 #ax.legend(custom_lines, ['Italy', other_country, 'France'], loc='upper left')
 #ax.legend(custom_lines, ['Planar', '3D'], loc='upper right')
-plt.show()
-plt.savefig("xtalk_vs_Threshold.pdf")
+#plt.show()
+plt.savefig("xtalk_vs_vbias.pdf")
